@@ -2,18 +2,53 @@ import React, { useState, useEffect } from 'react';
 import '../css/Candidates.css';
 // Candidates.js en üste ekleyin
 
+const updateStatus = async (candidateEmail, jobName, status) => {
+  try {
+    console.log('Gönderilen veri:', {
+      candidateEmail,
+      jobName,
+      applicationStatus: status
+    });
 
+    const response = await fetch('http://localhost:8080/userside/status/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        candidateEmail: candidateEmail,
+        jobName: jobName,
+        applicationStatus: status // PENDING, APPROVED veya REJECTED olmalı
+      }),
+    });
+
+    console.log('Response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      throw new Error(`Durum güncellenemedi: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.text();
+    console.log('Success response:', result);
+    alert(`Başvuru durumu güncellendi: ${result}`);
+    return result;
+  } catch (error) {
+    console.error('Hata oluştu:', error);
+    alert('Durum güncellenirken hata oluştu: ' + error.message);
+    throw error;
+  }
+};
 
 // Status değerlerini CSS sınıflarına eşleştiren nesne
 const statusClasses = {
-  approved: 'candidate-approved',
-  rejected: 'candidate-rejected',
+  accept: 'candidate-approved',
+  reject: 'candidate-rejected',
   pending: 'candidate-pending',
-  accept: 'candidate-approved',   // 'accept' değerini 'candidate-approved' sınıfına eşleştir
-  reject: 'candidate-rejected',   // 'reject' değerini 'candidate-rejected' sınıfına eşleştir
   none: '',
 }; // Bu fonksiyonu global olarak erişilebilir yap
-  
+
 export default function Candidates() {
   const [candidates, setCandidates] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -32,7 +67,7 @@ export default function Candidates() {
           throw new Error(`Failed to fetch universities: ${uniResponse.status}`);
         }
         const universities = await uniResponse.json();
-        
+
         // Eğer üniversite listesi boşsa, tüm adayları getir
         if (!universities || universities.length === 0) {
           const response = await fetch('http://localhost:8080/userside/filter/candidates', {
@@ -42,19 +77,19 @@ export default function Candidates() {
             },
             body: JSON.stringify([{}]) // Boş filtre ile tüm adayları getir
           });
-          
+
           if (!response.ok) {
             throw new Error(`Network response was not ok: ${response.status}`);
           }
-          
+
           const data = await response.json();
           processAndSetCandidates(data);
           return;
         }
-        
+
         // Her üniversite için ayrı istek gönder
         let allCandidates = [];
-        
+
         for (const university of universities) {
           const response = await fetch('http://localhost:8080/userside/filter/candidates', {
             method: 'POST',
@@ -65,15 +100,15 @@ export default function Candidates() {
               candidateUniversities: [university]
             }])
           });
-          
+
           if (!response.ok) {
             throw new Error(`Network response was not ok: ${response.status}`);
           }
-          
+
           const data = await response.json();
           allCandidates = [...allCandidates, ...data];
         }
-        
+
         processAndSetCandidates(allCandidates);
       } catch (error) {
         console.error('Error fetching candidates:', error);
@@ -81,13 +116,13 @@ export default function Candidates() {
         setLoading(false);
       }
     };
-    
+
     // Adayları işle ve state'e kaydet
     const processAndSetCandidates = (candidates) => {
       // Tekrarlanan adayları kaldır
-      const uniqueCandidates = Array.from(new Map(candidates.map(c => 
+      const uniqueCandidates = Array.from(new Map(candidates.map(c =>
         [c.candidateEmail, c])).values());
-      
+
       setCandidates(uniqueCandidates.map(c => ({
         id: c.candidateId || c.candidateEmail,
         name: c.candidateName,
@@ -102,10 +137,10 @@ export default function Candidates() {
         englishLevel: c.candidateEnglishLevel || "Not specified",
         status: c.status || 'none',
       })));
-      
+
       setLoading(false);
     };
-    
+
     fetchAllCandidates();
   }, []);
 
@@ -138,7 +173,6 @@ export default function Candidates() {
       delete window.sortCandidatesByAge;
     };
   }, []);
-
 
   // İngilizce seviyesine göre sıralama fonksiyonu
   function sortByEnglishLevel() {
@@ -207,25 +241,42 @@ export default function Candidates() {
     };
   }, []);
 
-
-  const updateStatus = (id, newStatus) => {
-    setCandidates(prev =>
-      prev.map(c => (c.id === id ? { ...c, status: newStatus } : c))
-    );
-    setSelected(null);
-  };
+  // updateStatus fonksiyonu artık global olarak tanımlanmış
+  // const updateStatus = (id, newStatus) => {
+  //   setCandidates(prev =>
+  //     prev.map(c => (c.id === id ? { ...c, status: newStatus } : c))
+  //   );
+  //   setSelected(null);
+  // };
 
   const downloadCV = candidate => {
-    fetch(`http://127.0.0.1:8080/userside/download/cv?email=${encodeURIComponent(
-      candidate.email
-    )}`)
-      .then(res => {
+    fetch(`http://localhost:8080/userside/download/cv`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `email=${encodeURIComponent(candidate.email)}`,
+    })
+      .then(async res => {
         if (!res.ok) {
-          throw new Error('CV not found');
+          const errorText = await res.text();
+          console.error('Server error response:', errorText);
+
+          if (res.status === 404) {
+            throw new Error('Bu aday için CV bulunamadı');
+          } else if (res.status === 500) {
+            throw new Error('Sunucu hatası: CV indirilemedi');
+          } else {
+            throw new Error(`CV indirilemedi (${res.status})`);
+          }
         }
         return res.blob();
       })
       .then(blob => {
+        if (blob.size === 0) {
+          throw new Error('İndirilen CV dosyası boş');
+        }
+
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -236,8 +287,12 @@ export default function Candidates() {
         document.body.appendChild(link);
         link.click();
         link.remove();
+        window.URL.revokeObjectURL(url);
       })
-      .catch(err => alert('Error downloading CV: ' + err));
+      .catch(err => {
+        console.error('Error downloading CV:', err);
+        alert('CV indirilirken bir hata oluştu: ' + err.message);
+      });
   };
 
   if (loading) {
@@ -258,7 +313,7 @@ export default function Candidates() {
     return age;
   }
   return (
-    
+
     <div className="candidates-container">
       {candidates.length === 0 ? (
         <p className="no-data">No candidates found.</p>
@@ -289,7 +344,7 @@ export default function Candidates() {
               onClick={() => {
                 // Önce adayı seçili olarak ayarla
                 setSelected(candidate);
-                
+
                 // Ardından API'den detaylı bilgileri al
                 fetch('http://127.0.0.1:8080/userside/get/candidate/details', {
                   method: 'POST',
@@ -301,31 +356,31 @@ export default function Candidates() {
                     jobName: candidate.jobName
                   })
                 })
-                .then(response => {
-                  if (!response.ok) {
-                    throw new Error('Failed to fetch candidate details');
-                  }
-                  return response.json();
-                })
-                .then(data => {
-                  console.log("API response:", data); // Debug için API yanıtını logla
-                  // API'den gelen detaylı bilgilerle seçili adayı güncelle
-                  setSelected({
-                    ...candidate,
-                    phone: data.candidatePhone || "Not specified",
-                    birthDay: data.candidateBirthDay || "Not specified",
-                    sex: data.candidateSex || "Not specified",
-                    expectedGraduateYear: data.candidateExpectedGraduateYear || "Not specified",
-                    cityName: data.cityName || "Not specified",
-                    applicationStatus: data.applicationStatus || "Not specified",
-                    englishLevel: data.candidateEnglishLevel || "Not specified", // İngilizce seviyesi
-                    // Diğer alanları da ekleyebilirsiniz
+                  .then(response => {
+                    if (!response.ok) {
+                      throw new Error('Failed to fetch candidate details');
+                    }
+                    return response.json();
+                  })
+                  .then(data => {
+                    console.log("API response:", data); // Debug için API yanıtını logla
+                    // API'den gelen detaylı bilgilerle seçili adayı güncelle
+                    setSelected({
+                      ...candidate,
+                      phone: data.candidatePhone || "Not specified",
+                      birthDay: data.candidateBirthDay || "Not specified",
+                      sex: data.candidateSex || "Not specified",
+                      expectedGraduateYear: data.candidateExpectedGraduateYear || "Not specified",
+                      cityName: data.cityName || "Not specified",
+                      applicationStatus: data.applicationStatus || "Not specified",
+                      englishLevel: data.candidateEnglishLevel || "Not specified", // İngilizce seviyesi
+                      // Diğer alanları da ekleyebilirsiniz
+                    });
+                  })
+                  .catch(error => {
+                    console.error('Error fetching candidate details:', error);
+                    // Hata durumunda mevcut bilgilerle devam et
                   });
-                })
-                .catch(error => {
-                  console.error('Error fetching candidate details:', error);
-                  // Hata durumunda mevcut bilgilerle devam et
-                });
               }}
             >
               Detay
@@ -353,13 +408,13 @@ export default function Candidates() {
             <div className="details">
               {Object.entries(selected).map(([key, value]) => {
                 if (['status', 'id'].includes(key)) return null;
-                
+
                 // Değer kontrolü yap, undefined veya null ise "Not specified" göster
                 const displayValue = value !== undefined && value !== null ? String(value) : "Not specified";
-                
+
                 // Alan isimlerini daha kullanıcı dostu hale getir
                 let label;
-                switch(key) {
+                switch (key) {
                   case 'university':
                     label = 'University';
                     break;
@@ -397,14 +452,14 @@ export default function Candidates() {
                   default:
                     label = key.charAt(0).toUpperCase() + key.slice(1);
                 }
-                
+
                 return (
                   <p key={key}>
                     <strong>{label}:</strong> {displayValue}
                   </p>
                 );
               })}
-              
+
               {/* Eksik alanlar için bilgi mesajını kaldırdık */}
             </div>
 
@@ -418,26 +473,62 @@ export default function Candidates() {
             <div className="popup-buttons">
               <button
                 className="btn approve"
-                onClick={() => updateStatus(selected.id, 'approved')}
+                onClick={async () => {
+                  try {
+                    await updateStatus(selected.email, selected.jobName, 'acces');
+                    // UI'ı güncelle
+                    setCandidates(prev =>
+                      prev.map(c => (c.email === selected.email ? { ...c, status: 'acces' } : c))
+                    );
+                    setSelected(null);
+                  } catch (error) {
+                    console.error('Status update failed:', error);
+                  }
+                }}
               >
                 Onayla
               </button>
               <button
                 className="btn pending"
-                onClick={() => updateStatus(selected.id, 'pending')}
+                onClick={async () => {
+                  try {
+                    await updateStatus(selected.email, selected.jobName, 'pending');
+                    // UI'ı güncelle
+                    setCandidates(prev =>
+                      prev.map(c => (c.email === selected.email ? { ...c, status: 'pending' } : c))
+                    );
+                    setSelected(null);
+                  } catch (error) {
+                    console.error('Status update failed:', error);
+                  }
+                }}
               >
                 Beklet
               </button>
               <button
                 className="btn reject"
-                onClick={() => updateStatus(selected.id, 'rejected')}
+                onClick={async () => {
+                  try {
+                    await updateStatus(selected.email, selected.jobName, 'reject');
+                    // UI'ı güncelle
+                    setCandidates(prev =>
+                      prev.map(c => (c.email === selected.email ? { ...c, status: 'reject' } : c))
+                    );
+                    setSelected(null);
+                  } catch (error) {
+                    console.error('Status update failed:', error);
+                  }
+                }}
               >
                 Reddet
               </button>
             </div>
+
           </div>
         </div>
       )}
     </div>
   );
 }
+
+

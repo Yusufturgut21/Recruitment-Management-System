@@ -43,7 +43,6 @@ function Sidebar({ onFilterApply = () => { } }) {
   const [applicationMinDate, setApplicationMinDate] = useState('');
   const [applicationMaxDate, setApplicationMaxDate] = useState('');
 
-
   // Tek select için yaş ve GPA state'leri
   const yas_araligi = ['22-27', '28-33', '34-39', '40-45', '46-51', '52-57', '58-63'];
   const GpaOptions = [
@@ -355,7 +354,6 @@ function Sidebar({ onFilterApply = () => { } }) {
         <hr className="ayirma_cubuk" />
       </div>
 
-
       <div className="Filter-container">
         <button className="filtreUygulaButon" onClick={applyFilter}>
           apply filter
@@ -399,3 +397,5 @@ function FilterSection({ title, value, options, onChange, onAdd, items, onDelete
 }
 
 export default Sidebar;
+
+

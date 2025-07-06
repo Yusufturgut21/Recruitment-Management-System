@@ -15,6 +15,7 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
 
   // Aday verilerini almak için fonksiyon
   const fetchCandidates = () => {
+    // Önce tüm adayların email ve jobName bilgilerini alalım
     fetch('http://localhost:8080/userside/filter/candidates', {
       method: 'POST',
       headers: {
@@ -27,20 +28,30 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
         return response.json();
       })
       .then(data => {
-        setCandidates(data.map(c => ({
-          id: c.candidateId || c.candidateEmail,
-          name: c.candidateName,
-          surname: c.candidateSurname,
-          email: c.candidateEmail,
-          university: c.candidateUniversity,
-          major: c.candidateMajor,
-          jobName: c.jobName,
-          age: c.candidateAge,
-          gpa: c.candidateGPA,
-          currentYear: c.candidateCurrentYear,
-          englishLevel: c.candidateEnglishLevel,
-          status: c.status || 'none',
-        })));
+        // Her aday için detaylı bilgileri alalım
+        const detailPromises = data.map(candidate => 
+          fetch('http://127.0.0.1:8080/userside/get/candidate/details', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              candidateEmail: candidate.candidateEmail,
+              jobName: candidate.jobName
+            })
+          })
+          .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+          })
+        );
+        
+        // Tüm detay isteklerinin tamamlanmasını bekleyelim
+        return Promise.all(detailPromises);
+      })
+      .then(detailedCandidates => {
+        // Detaylı aday bilgilerini state'e kaydedelim
+        setCandidates(detailedCandidates);
         setShowStats(true); // Veriler yüklendikten sonra popup'ı göster
       })
       .catch(error => {
@@ -152,9 +163,64 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
           <button
             className="action-btn"
             onClick={() => {
-              if (typeof window.sortCandidatesByEnglishLevel === 'function') {
-                window.sortCandidatesByEnglishLevel();
-              }
+              // Önce tüm adayların email ve jobName bilgilerini alalım
+              fetch('http://localhost:8080/userside/filter/candidates', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify([{}]), // Boş filtre ile tüm adayları getir
+              })
+                .then(response => {
+                  if (!response.ok) throw new Error('Network response was not ok');
+                  return response.json();
+                })
+                .then(data => {
+                  // Her aday için detaylı bilgileri alalım
+                  const detailPromises = data.map(candidate => 
+                    fetch('http://127.0.0.1:8080/userside/get/candidate/details', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        candidateEmail: candidate.candidateEmail,
+                        jobName: candidate.jobName
+                      })
+                    })
+                    .then(response => {
+                      if (!response.ok) throw new Error('Network response was not ok');
+                      return response.json();
+                    })
+                  );
+                  
+                  // Tüm detay isteklerinin tamamlanmasını bekleyelim
+                  return Promise.all(detailPromises);
+                })
+                .then(detailedCandidates => {
+                  // İngilizce seviyesine göre sıralama
+                  const levels = ['a1', 'a2', 'b1', 'b2', 'c1', 'c2'];
+                  const sortedCandidates = [...detailedCandidates].sort(
+                    (a, b) =>
+                      levels.indexOf((b.candidateEnglishLevel || '').toLowerCase()) -
+                      levels.indexOf((a.candidateEnglishLevel || '').toLowerCase())
+                  );
+                  
+                  // Statü bilgisini koruyarak adayları güncelle
+                  const candidatesWithStatus = sortedCandidates.map(candidate => ({
+                    ...candidate,
+                    status: candidate.applicationStatus // Statü bilgisini koru
+                  }));
+                  
+                  // Sıralanmış adayları window.updateCandidates fonksiyonu ile güncelle
+                  if (typeof window.updateCandidates === 'function') {
+                    window.updateCandidates(candidatesWithStatus);
+                  }
+                })
+                .catch(error => {
+                  console.error('Error fetching candidates:', error);
+                  alert('Adaylar sıralanırken hata oluştu.');
+                });
             }}
           >
             English Level
@@ -216,3 +282,5 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
 }
 
 export default Filter;
+
+

@@ -22,7 +22,8 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 const Statistics = ({ candidates }) => {
   // Existing statistics functions
   const prepareUniversityData = () => {
-    const data = candidates.reduce((acc, { university }) => {
+    const data = candidates.reduce((acc, candidate) => {
+      const university = candidate.candidateUniversity;
       const key = university || 'Belirtilmemiş';
       acc[key] = (acc[key] || 0) + 1;
       return acc;
@@ -32,12 +33,13 @@ const Statistics = ({ candidates }) => {
 
   const prepareStatusData = () => {
     const statusMap = {
-      approved: 'Onaylanan',
-      rejected: 'Reddedilen',
+      accept: 'Onaylanan',
+      reject: 'Reddedilen',
       pending: 'Bekleyen',
       none: 'Belirtilmemiş'
     };
-    const data = candidates.reduce((acc, { status }) => {
+    const data = candidates.reduce((acc, candidate) => {
+      const status = candidate.applicationStatus;
       const key = statusMap[status] || 'Belirtilmemiş';
       acc[key] = (acc[key] || 0) + 1;
       return acc;
@@ -55,7 +57,7 @@ const Statistics = ({ candidates }) => {
     ];
     return ranges.map(range => ({
       name: range.name,
-      count: candidates.filter(c => c.gpa >= range.min && c.gpa < range.max).length
+      count: candidates.filter(c => c.candidateGPA >= range.min && c.candidateGPA < range.max).length
     }));
   };
 
@@ -68,7 +70,8 @@ const Statistics = ({ candidates }) => {
       c1: 'C1 (İleri)',
       c2: 'C2 (Ana Dil)'
     };
-    const data = candidates.reduce((acc, { englishLevel }) => {
+    const data = candidates.reduce((acc, candidate) => {
+      const englishLevel = candidate.candidateEnglishLevel;
       const key = englishLevel ? (levelMap[englishLevel.toLowerCase()] || englishLevel) : 'Belirtilmemiş';
       acc[key] = (acc[key] || 0) + 1;
       return acc;
@@ -78,13 +81,14 @@ const Statistics = ({ candidates }) => {
 
   const prepareClassYearData = () => {
     const yearMap = {
-      freshman: '1. Sınıf',
-      sophomore: '2. Sınıf',
-      junior: '3. Sınıf',
-      senior: '4. Sınıf',
+      first: '1. Sınıf',
+      second: '2. Sınıf',
+      third: '3. Sınıf',
+      fourth: '4. Sınıf',
       graduated: 'Mezun'
     };
-    const data = candidates.reduce((acc, { currentYear }) => {
+    const data = candidates.reduce((acc, candidate) => {
+      const currentYear = candidate.candidateCurrentYear;
       const key = currentYear ? (yearMap[currentYear.toLowerCase()] || currentYear) : 'Belirtilmemiş';
       acc[key] = (acc[key] || 0) + 1;
       return acc;
@@ -99,7 +103,8 @@ const Statistics = ({ candidates }) => {
       female: 'Kadın',
       other: 'Diğer'
     };
-    const data = candidates.reduce((acc, { sex }) => {
+    const data = candidates.reduce((acc, candidate) => {
+      const sex = candidate.candidateSex;
       const key = sex ? (genderMap[sex.toLowerCase()] || sex) : 'Belirtilmemiş';
       acc[key] = (acc[key] || 0) + 1;
       return acc;
@@ -108,7 +113,8 @@ const Statistics = ({ candidates }) => {
   };
 
   const prepareCityData = () => {
-    const data = candidates.reduce((acc, { cityName }) => {
+    const data = candidates.reduce((acc, candidate) => {
+      const cityName = candidate.cityName;
       const key = cityName || 'Belirtilmemiş';
       acc[key] = (acc[key] || 0) + 1;
       return acc;
@@ -118,20 +124,35 @@ const Statistics = ({ candidates }) => {
 
   const prepareAgeData = () => {
     const ranges = [
-      { name: '18-21', min: 18, max: 21 },
-      { name: '22-25', min: 22, max: 25 },
-      { name: '26-30', min: 26, max: 30 },
-      { name: '30+', min: 30, max: 100 }
+      { name: '18-21', min: 18, max: 22 },
+      { name: '22-25', min: 22, max: 26 },
+      { name: '26-30', min: 26, max: 31 },
+      { name: '30+', min: 31, max: 100 }
     ];
+
     return ranges.map(range => ({
       name: range.name,
-      count: candidates.filter(c => c.age >= range.min && c.age < range.max).length
+      count: candidates.filter(c => {
+        // Doğum tarihinden yaş hesaplama
+        if (c.candidateBirthDay) {
+          const birthDate = new Date(c.candidateBirthDay);
+          const today = new Date();
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const m = today.getMonth() - birthDate.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+          }
+          return age >= range.min && age < range.max;
+        }
+        return false;
+      }).length
     }));
   };
 
   const prepareGraduationYearData = () => {
-    const data = candidates.reduce((acc, { expectedGraduateYear }) => {
-      const key = expectedGraduateYear || 'Belirtilmemiş';
+    const data = candidates.reduce((acc, candidate) => {
+      const expectedGraduateYear = candidate.candidateExpectedGraduateYear;
+      const key = expectedGraduateYear ? expectedGraduateYear.toString() : 'Belirtilmemiş';
       acc[key] = (acc[key] || 0) + 1;
       return acc;
     }, {});
@@ -139,7 +160,8 @@ const Statistics = ({ candidates }) => {
   };
 
   const prepareJobPositionData = () => {
-    const data = candidates.reduce((acc, { jobName }) => {
+    const data = candidates.reduce((acc, candidate) => {
+      const jobName = candidate.jobName;
       const key = jobName || 'Belirtilmemiş';
       acc[key] = (acc[key] || 0) + 1;
       return acc;
@@ -148,7 +170,8 @@ const Statistics = ({ candidates }) => {
   };
 
   const prepareMajorData = () => {
-    const data = candidates.reduce((acc, { major }) => {
+    const data = candidates.reduce((acc, candidate) => {
+      const major = candidate.candidateMajor;
       const key = major || 'Belirtilmemiş';
       acc[key] = (acc[key] || 0) + 1;
       return acc;
@@ -160,7 +183,7 @@ const Statistics = ({ candidates }) => {
   const universityData = prepareUniversityData();
   const statusData = prepareStatusData();
   const gpaData = prepareGPAData();
-  const englishData = prepareEnglishLevelData();
+  const English_Level = prepareEnglishLevelData();
   const classYearData = prepareClassYearData();
   const genderData = prepareGenderData();
   const cityData = prepareCityData();
@@ -213,7 +236,7 @@ const Statistics = ({ candidates }) => {
               <BarChart data={statusData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="Başvuru Durumu" offset={-15} position="insideBottom" />
+                  <Label value="Başvuru Durumu" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
                   <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
@@ -236,7 +259,7 @@ const Statistics = ({ candidates }) => {
               <BarChart data={gpaData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="GPA Aralığı" offset={-15} position="insideBottom" />
+                  <Label value="GPA Aralığı" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
                   <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
@@ -258,7 +281,7 @@ const Statistics = ({ candidates }) => {
             <ResponsiveContainer width="100%" height={400}>
               <PieChart>
                 <Pie
-                  data={englishData}
+                  data={English_Level}
                   cx="50%"
                   cy="50%"
                   outerRadius={120}
@@ -268,7 +291,7 @@ const Statistics = ({ candidates }) => {
                   label={renderCustomizedLabel}
                   labelLine={false}
                 >
-                  {englishData.map((entry, index) => (
+                  {English_Level.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -287,7 +310,7 @@ const Statistics = ({ candidates }) => {
               <BarChart data={classYearData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="Sınıf" offset={-15} position="insideBottom" />
+                  <Label value="Sınıf" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
                   <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
@@ -338,7 +361,7 @@ const Statistics = ({ candidates }) => {
               <BarChart data={cityData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="Şehirler" offset={-15} position="insideBottom" />
+                  <Label value="Şehirler" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
                   <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
@@ -361,7 +384,7 @@ const Statistics = ({ candidates }) => {
               <BarChart data={ageData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="Yaş Aralığı" offset={-15} position="insideBottom" />
+                  <Label value="Yaş Aralığı" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
                   <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
@@ -384,7 +407,7 @@ const Statistics = ({ candidates }) => {
               <BarChart data={graduationYearData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="Mezuniyet Yılı" offset={-15} position="insideBottom" />
+                  <Label value="Mezuniyet Yılı" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
                   <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
@@ -435,7 +458,7 @@ const Statistics = ({ candidates }) => {
               <BarChart data={majorData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="Bölümler" offset={-15} position="insideBottom" />
+                  <Label value="Bölümler" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
                   <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
@@ -455,3 +478,6 @@ const Statistics = ({ candidates }) => {
 };
 
 export default Statistics;
+
+
+
