@@ -1,0 +1,129 @@
+.statistics-container {
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 1800px;
+  margin: 20px auto;
+  width: 95%;
+}
+
+.statistics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #eee;
+}
+
+.statistics-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.total-candidates {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 18px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.statistics-content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* Her grafik bloğu bir satır */
+.chart-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Geniş kart tasarımı */
+.wide-chart-card {
+  width: 100%;
+  background-color: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.full-width-chart {
+  width: 100%;
+  background-color: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.wide-chart-card h3, .full-width-chart h3 {
+  margin-top: 0;
+  margin-bottom: 25px;
+  color: #34495e;
+  font-size: 24px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.chart-wrapper {
+  width: 100%;
+  height: 450px;
+}
+
+.recharts-legend-item {
+  font-size: 15px !important;
+}
+
+.recharts-tooltip {
+  border-radius: 8px !important;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.15) !important;
+  padding: 12px !important;
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border: none !important;
+  font-size: 14px !important;
+}
+
+.recharts-label {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+@media (max-width: 1200px) {
+  .chart-row {
+    flex-direction: column;
+  }
+  
+  .wide-chart-card {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .statistics-container {
+    padding: 20px;
+    width: 100%;
+    border-radius: 0;
+  }
+  
+  .statistics-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .chart-wrapper {
+    height: 350px;
+  }
+  
+  .wide-chart-card, .full-width-chart {
+    padding: 15px;
+  }
+}

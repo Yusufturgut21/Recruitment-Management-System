@@ -1,0 +1,278 @@
+.filter-card {
+  width: 1230px;
+  margin-right: 50px;
+  background-color: #f4f4f2;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  padding: 20px 30px;
+}
+
+.filter-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  flex-wrap: nowrap;
+  /* tam satırda kalmasını sağlar */
+}
+
+.filter-left {
+  flex: 1 1 auto;
+  min-width: 250px;
+}
+
+.filter-right {
+  flex: 0 0 auto;
+  /* sabit genişlik */
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  /* butonlar alt alta */
+  gap: 12px;
+}
+
+.filter-header {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  /* sığdığı kadar yatay, taşınca alt satıra geçer */
+  gap: 8px;
+}
+
+.filter-btn {
+  padding: 6px 12px;
+  background-color: #1976d2;
+  color: #fff;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+  /* satır içi buton yazısı kırılmaz */
+  font-size: 13px;
+  min-width: 70px;
+  text-align: center;
+}
+
+.filter-btn:hover {
+  background-color: #115293;
+  border-color: #0d47a1;
+}
+
+.action-btn {
+  padding: 1px 5px;
+  font-size: 12px;
+  width: 100px;
+  border-radius: 6px;
+  background-color: #3a59f3;
+  color: white;
+  border: 1px solid #032dd6;
+  font-weight: 500px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 6px rgba(67, 160, 71, 0.2);
+  box-sizing: border-box;
+}
+
+.action-btn:hover {
+  background-color: #252625;
+}
+
+.filter-divider {
+  width: 5px;
+  background-color: #021ab1;
+  height: auto;
+  align-self: stretch;
+  border-radius: 1px;
+
+}
+
+/* Popup */
+.popup {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 25px;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  border-radius: 12px;
+  max-width: 90%;
+}
+
+.popup-content {
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 16px;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  margin-top: 20px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.delete-btn:hover {
+  background: #b71c1c;
+}
+
+.send-btn {
+  margin-top: 20px;
+  background: #4601f3;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+/* Ekle butonu */
+.filters-send {
+  padding: 1px 5px;
+  font-size: 12px;
+  width: 100px;
+  border-radius: 6px;
+  background-color: #11aa3c;
+  color: white;
+  border: 1px solid #032dd6;
+  font-weight: 500px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 6px rgba(67, 160, 71, 0.2);
+  box-sizing: border-box;
+  margin-top: 20px;
+}
+/* İstatistik butonu */
+.statistics-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 16px;
+  width: 100%;
+}
+
+.statistics-btn:hover {
+  background-color: #45a049;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* İçerik genişliğini artırma */
+.popup-overlay > div {
+  width: 90%; /* Veya istediğiniz genişlik (örneğin 800px) */
+  max-width: 800px; /* Maksimum genişlik */
+}
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.large-popup {
+  width: 90%;
+  max-width: 1200px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #333;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+.filters-send:hover {
+  background-color: #1251a3;
+}
+/* Responsive görünüm */
+@media (max-width: 750px) {
+  .filter-card {
+    width: 40%;
+    padding: 20px;
+  }
+
+  .filter-card-content {
+    flex-direction: column;
+  }
+
+  .filter-divider {
+    display: none;
+  }
+
+  .filter-right {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-width: auto;
+  }
+
+  .action-btn {
+    flex: 1 1 45%;
+    width: auto;
+  }
+
+
+}

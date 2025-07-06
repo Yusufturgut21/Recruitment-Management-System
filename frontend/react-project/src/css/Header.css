@@ -1,0 +1,121 @@
+/* Genel Header Stili */
+.header {
+    position: sticky;
+  top: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #353535, #0d47a1);
+  color: #ffffff;
+  padding: 0 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  height: 80px;
+  gap: 1rem;
+}
+
+/* Logo */
+.logo img {
+  height: 80px;   /* 120’den küçülttüm, header yüksekliğiyle uyumlu */
+  width: auto;    /* Oranı koru */
+  object-fit: contain;
+}
+
+/* Başlık */
+.header h2 {
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Title */
+.title {
+  flex: 1 1 auto;
+  padding-left: 20px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
+
+
+/* ----------------------- */
+/* Responsive Ayarlar      */
+/* ----------------------- */
+
+/* Telefonlar 0 - 479px */
+@media (max-width: 479px) {
+  .header {
+    justify-content: center;
+    padding: 0 12px;
+  }
+
+  .logo img {
+    height: 48px;
+  }
+
+  .header h2 {
+    font-size: 1rem;
+  }
+
+  .title {
+    font-size: 0.85rem;
+    padding-left: 10px;
+    display: none; /* Telefon küçüldüğünde title gizlensin */
+  }
+
+  
+}
+
+/* Küçük tabletler 480 - 767px */
+@media (min-width: 480px) and (max-width: 767px) {
+  .header {
+    padding: 0 16px;
+  }
+
+  .logo img {
+    height: 60px;
+  }
+
+  .header h2 {
+    font-size: 1.25rem;
+  }
+
+  .title {
+    font-size: 1rem;
+    padding-left: 15px;
+    display: block;
+  }
+
+ 
+}
+
+/* Tablet ve üstü 768px ve üzeri */
+@media (min-width: 768px) {
+  .header {
+    padding: 0 24px;
+  }
+
+  .logo img {
+    height: 80px;
+  }
+
+  .header h2 {
+    font-size: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+    padding-left: 20px;
+    display: block;
+  }
+
+  
+}
