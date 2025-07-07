@@ -67,22 +67,39 @@ function Sidebar({ onFilterApply = () => { } }) {
   const ApplicationStatus = ['accept', 'reject', 'pending'];
 
   // Backend'den filtre seçeneklerini çek
-  // Backend'den filtre seçeneklerini çek
   useEffect(() => {
+    // Daha önce yüklendiyse tekrar istek atma
+    if (UNIVERSITIES.length > 0) return;
+    
+    console.log('Fetching universities...');
     fetch("http://localhost:8080/userside/get/universities")
       .then((response) => response.json())
-      .then((data) => setUniversities(Array.isArray(data) ? data : []))
+      .then((data) => {
+        console.log('Universities fetched:', data.length);
+        setUniversities(Array.isArray(data) ? data : []);
+      })
       .catch((error) => console.error("Error fetching universities:", error));
-  }, []);
+  }, [UNIVERSITIES.length]);
 
   useEffect(() => {
+    // Daha önce yüklendiyse tekrar istek atma
+    if (MAJORS.length > 0) return;
+    
+    console.log('Fetching majors...');
     fetch("http://localhost:8080/userside/get/majors")
       .then((response) => response.json())
-      .then((data) => setMajors(Array.isArray(data) ? data : []))
+      .then((data) => {
+        console.log('Majors fetched:', data.length);
+        setMajors(Array.isArray(data) ? data : []);
+      })
       .catch((error) => console.error("Error fetching majors:", error));
-  }, []);
+  }, [MAJORS.length]);
 
   useEffect(() => {
+    // Daha önce yüklendiyse tekrar istek atma
+    if (jobNames.length > 0) return;
+    
+    console.log('Fetching job names...');
     fetch('http://localhost:8080/userside/get/jobs')
       .then(response => {
         if (!response.ok) {
@@ -91,14 +108,14 @@ function Sidebar({ onFilterApply = () => { } }) {
         return response.json();
       })
       .then(data => {
-        console.log('Fetched job names:', data);
+        console.log('Fetched job names:', data.length);
         setJobNames(Array.isArray(data) ? data : []);
       })
       .catch(error => {
         console.error('Error fetching job names:', error);
         setJobNames([]);
       });
-  }, []);
+  }, [jobNames.length]);
 
   // Ortak fonksiyonlar
   const handleSelectChange = (setter) => (e) => setter(e.target.value);
@@ -143,6 +160,7 @@ function Sidebar({ onFilterApply = () => { } }) {
 
   return (
     <div className="sidebar">
+
       {/* Şehirler */}
       <FilterSection
         title="City"
@@ -210,9 +228,9 @@ function Sidebar({ onFilterApply = () => { } }) {
       />
 
       {/* Yaş Aralığı (tek select) */}
-      <div className="Filter-container">
-        <h3 className="slide_baslik">Age Range</h3>
-        <div className="Filter-selector">
+      <div className="filter-container">
+        <h3 className="sidebar-title">Age Range</h3>
+        <div className="filter-selector">
           <label>Age Range Select</label>
           <select
             value={selectedYasAraligi}
@@ -235,7 +253,7 @@ function Sidebar({ onFilterApply = () => { } }) {
             ))}
           </select>
         </div>
-        <hr className="ayirma_cubuk" />
+        <hr className="sidebar-divider" />
       </div>
 
       {/* İngilizce Seviyesi */}
@@ -250,10 +268,9 @@ function Sidebar({ onFilterApply = () => { } }) {
       />
 
       {/* GPA Aralığı (tek select) */}
-      {/* GPA Aralığı (tek select) */}
-      <div className="Filter-container">
-        <h3 className="slide_baslik">GPA Range</h3>
-        <div className="Filter-selector">
+      <div className="filter-container">
+        <h3 className="sidebar-title">GPA Range</h3>
+        <div className="filter-selector">
           <label>GPA Range Select</label>
           <select
             value={selectedGpaOption}
@@ -284,7 +301,7 @@ function Sidebar({ onFilterApply = () => { } }) {
             ))}
           </select>
         </div>
-        <hr className="ayirma_cubuk" />
+        <hr className="sidebar-divider" />
       </div>
 
       {/* Eğitim */}
@@ -299,7 +316,6 @@ function Sidebar({ onFilterApply = () => { } }) {
       />
 
       {/* Mezuniyet Yılı */}
-
       <FilterSection
         title="Expected Graduation Year"
         value={secilenMezuniyetYili}
@@ -318,11 +334,11 @@ function Sidebar({ onFilterApply = () => { } }) {
           setCandidateExpectedGraduateYears
         )}
       />
-      <hr className="ayirma_cubuk" />
 
-      <div className="Filter-container">
-        <h3 className="slide_baslik">Application Date</h3>
-        <div className="Filter-selector">
+      {/* Application Date */}
+      <div className="filter-container">
+        <h3 className="sidebar-title">Application Date</h3>
+        <div className="filter-selector">
           <label>Date:</label>
           <input
             type="date"
@@ -332,33 +348,38 @@ function Sidebar({ onFilterApply = () => { } }) {
             placeholder="YYYY-MM-DD"
           />
         </div>
-        <hr className="ayirma_cubuk" />
+        <hr className="sidebar-divider" />
       </div>
-      <div className="Filter-container">
-        <h3 className="slide_baslik">Application Date Range</h3>
-        <div className="Filter-selector">
-          <label>Start Date:</label>
-          <input
-            type="date"
-            value={applicationMinDate}
-            onChange={e => setApplicationMinDate(e.target.value)}
-            style={{ width: 150 }}
-          />
-          <label style={{ marginLeft: '10px' }}>End Date:</label>
-          <input
-            type="date"
-            value={applicationMaxDate}
-            onChange={e => setApplicationMaxDate(e.target.value)}
-            style={{ width: 150 }}
-          />
+
+      {/* Application Date Range */}
+      <div className="filter-container">
+        <h3 className="sidebar-title">Application Date Range</h3>
+        <div className="filter-selector">
+          <div style={{ marginBottom: '10px' }}>
+            <label>Start Date:</label>
+            <input
+              type="date"
+              value={applicationMinDate}
+              onChange={e => setApplicationMinDate(e.target.value)}
+              style={{ width: 150 }}
+            />
+          </div>
+          <div>
+            <label>End Date:</label>
+            <input
+              type="date"
+              value={applicationMaxDate}
+              onChange={e => setApplicationMaxDate(e.target.value)}
+              style={{ width: 150 }}
+            />
+          </div>
         </div>
-        <hr className="ayirma_cubuk" />
+        <hr className="sidebar-divider" />
       </div>
 
-
-      <div className="Filter-container">
-        <button className="filtreUygulaButon" onClick={applyFilter}>
-          apply filter
+      <div className="filter-container" style={{ textAlign: 'center' }}>
+        <button className="apply-filter-button" onClick={applyFilter}>
+          Apply Filter
         </button>
       </div>
     </div>
@@ -368,9 +389,9 @@ function Sidebar({ onFilterApply = () => { } }) {
 // FilterSection component aynı kalabilir
 function FilterSection({ title, value, options, onChange, onAdd, items, onDelete }) {
   return (
-    <div className="Filter-container">
-      <h3 className="slide_baslik">{title}</h3>
-      <div className="Filter-selector">
+    <div className="filter-container">
+      <h3 className="sidebar-title">{title}</h3>
+      <div className="filter-selector">
         <label>{title} Select</label>
         <select value={value} onChange={onChange}>
           <option value="">--Select --</option>
@@ -384,7 +405,7 @@ function FilterSection({ title, value, options, onChange, onAdd, items, onDelete
       </div>
 
       {items.length > 0 && (
-        <ul className="Filter-list">
+        <ul className="filter-list">
           {items.map((item, i) => (
             <li key={i}>
               {item}
@@ -393,7 +414,7 @@ function FilterSection({ title, value, options, onChange, onAdd, items, onDelete
           ))}
         </ul>
       )}
-      <hr className="ayirma_cubuk" />
+      <hr className="sidebar-divider" />
     </div>
   );
 }

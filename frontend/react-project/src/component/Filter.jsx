@@ -68,14 +68,19 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
           <div className="filter-header-container">
             <h3 className="filter-header">Filter Groups</h3>
             <button 
-              className="filters-send statistics-btn-modern"
+              className="statistics-btn-modern"
               onClick={fetchCandidates}
             >
-              Statistics
+              <i className="fas fa-chart-bar"></i> Statistics
             </button>
           </div>
 
-          {filtersBuffers.length === 0 && <p>No Filter Groups added yet</p>}
+          {filtersBuffers.length === 0 && (
+            <div className="empty-state">
+              <i className="fas fa-filter empty-icon"></i>
+              <p>No Filter Groups added yet.<br/>Create filters from the sidebar to get started.</p>
+            </div>
+          )}
 
           <div className="filter-buttons">
             {filtersBuffers.map(({ name, filters }) => (
@@ -84,13 +89,13 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
                 className="filter-btn"
                 onClick={() => setActiveBuffer({ name, filters })}
               >
-                {name}
+                <i className="fas fa-tag"></i> {name}
               </button>
             ))}
           </div>
 
           <button
-            className="filters-send"
+            className="apply-filters-btn"
             onClick={() => {
               const payload = filtersBuffers.map(buffer => buffer.filters);
 
@@ -148,16 +153,15 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
                 });
             }}
           >
-            APPLY FILTERS
+            <i className="fas fa-search"></i> APPLY FILTERS
           </button>
-          
-        
         </div>
 
         <div className="filter-divider"></div>
 
         {/* Sağ taraf */}
         <div className="filter-right">
+          <h4 className="sort-header">Sort By</h4>
           <button
             className="action-btn"
             onClick={() => {
@@ -166,7 +170,7 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
               }
             }}
           >
-            Age
+            <i className="fas fa-birthday-cake"></i> Age
           </button>
           <button
             className="action-btn"
@@ -176,7 +180,7 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
               }
             }}
           >
-            GPA
+            <i className="fas fa-graduation-cap"></i> GPA
           </button>
           <button
             className="action-btn"
@@ -246,7 +250,6 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
           >
             <i className="fas fa-language"></i> English Level
           </button>
-
           
           <button
             className="action-btn"
@@ -256,7 +259,7 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
               }
             }}
           >
-            Educational Status
+            <i className="fas fa-user-graduate"></i> Educational Status
           </button>
         </div>
       </div>
@@ -280,14 +283,16 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
             <button className="close-btn" onClick={() => setActiveBuffer(null)}>
               &times;
             </button>
-            <h4>{activeBuffer.name} Details</h4>
-            <ul>
+            <h4 className="popup-title">{activeBuffer.name} Details</h4>
+            <ul className="filter-details-list">
               {Object.entries(activeBuffer.filters).map(([key, value]) => (
-                <li key={key}>
-                  <strong>{key}:</strong>{' '}
-                  {Array.isArray(value)
-                    ? (value.length > 0 ? value.join(', ') : 'Not selected')
-                    : (value !== '' && value !== null && value !== undefined ? value : 'Not selected')}
+                <li key={key} className="filter-detail-item">
+                  <span className="filter-key">{key}:</span>{' '}
+                  <span className="filter-value">
+                    {Array.isArray(value)
+                      ? (value.length > 0 ? value.join(', ') : 'Not selected')
+                      : (value !== '' && value !== null && value !== undefined ? value : 'Not selected')}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -295,7 +300,7 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
               className="delete-btn"
               onClick={() => handleDeleteBuffer(activeBuffer.name)}
             >
-              Delete Filter Group
+              <i className="fas fa-trash-alt"></i> Delete Filter Group
             </button>
           </div>
         </div>

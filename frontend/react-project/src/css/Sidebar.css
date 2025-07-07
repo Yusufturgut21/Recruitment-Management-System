@@ -1,105 +1,121 @@
-/* === SIDEBAR STİLLERİ === */
+/* ===== SIDEBAR COMPONENT ===== */
 .sidebar {
-  position: fixed;
-  top: 80px; /* header yüksekliği */
-  right: 0;  /* sağda sabit */
-  width: 250px;
-  height: calc(100vh - 101px);
-  background-color: #0D47A1;
-  padding: 20px 15px;
-  color: white;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--primary-blue);
+  padding: var(--space-lg);
+  color: var(--white);
+  box-shadow: var(--shadow-lg);
   overflow-y: auto;
-  z-index: 1000;
+  font-family: var(--font-family-primary);
+  width: 100%;
+  height: 100%;
 }
-body {
-  min-width: 500px;
-  overflow-x: auto;
-}
-.sidebar .slide_baslik {
-  font-size: 20px;
-  font-weight: 600;
+
+.sidebar-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-lg);
+  color: var(--white);
 }
 
-.sidebar .ayirma_cubuk {
+.sidebar-divider {
   height: 2px;
-  background-color: #fff;
-  margin: 10px 0;
-  border-radius: 10px;
+  background-color: var(--white);
+  margin: var(--space-md) 0;
+  border-radius: var(--radius-lg);
   border: none;
+  opacity: 0.3;
 }
 
-/* === SEÇİM ALANI === */
-.Filter-container {
-  background-color: #1A237E;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
-  font-family: 'Segoe UI', sans-serif;
-  color: #fff;
+/* ===== FILTER SECTION ===== */
+.filter-container {
+  background-color: var(--primary-blue-light);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-lg);
+  font-family: var(--font-family-primary);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.Filter-selector {
+.filter-selector {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap; /* satır kırmaya izin ver */
-  margin-bottom: 10px;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-sm);
 }
 
-.Filter-selector select {
-  flex: 1 1 160px; /* büyüyüp küçülebilir, baz genişlik 160px */
+.filter-selector select {
+  flex: 1 1 160px;
   min-width: 120px;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #0D47A1;
-  background-color: #fff;
-  color: #0D47A1;
-  font-weight: 500;
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-300);
+  background-color: var(--white);
+  color: var(--gray-800);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-primary);
+  transition: border-color var(--transition-fast);
 }
 
-.Filter-selector button {
-  flex: 0 0 auto; /* sabit boyut */
-  padding: 8px 14px;
-  background-color: #1976D2;
-  color: #fff;
+.filter-selector select:focus {
+  outline: none;
+  border-color: var(--secondary-blue);
+  box-shadow: 0 0 0 2px rgba(92, 107, 192, 0.2);
+}
+
+.filter-selector button {
+  flex: 0 0 auto;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--secondary-blue);
+  color: var(--white);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: background-color var(--transition-fast);
 }
 
-.Filter-selector button:hover {
-  background-color: #0D47A1;
+.filter-selector button:hover {
+  background-color: var(--primary-blue-dark);
 }
 
-.Filter-list {
-  margin-top: 10px;
+.filter-list {
+  margin-top: var(--space-sm);
   list-style: none;
   padding: 0;
 }
 
-.Filter-list li {
-  background-color: #283593;
-  padding: 6px 12px;
-  margin-bottom: 6px;
-  border-radius: 6px;
+.filter-list li {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-xs);
+  border-radius: var(--radius-md);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #fff;
+  color: var(--white);
+  font-size: var(--font-size-sm);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.Filter-list button {
+.filter-list button {
   background-color: transparent;
   border: none;
-  color: #FF5252;
-  font-weight: bold;
+  color: var(--accent-red);
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.filter-list button:hover {
+  background-color: rgba(231, 76, 60, 0.2);
 }
 
 .close-btn {
@@ -139,58 +155,78 @@ body {
   background: #0D47A1;
 }
 
-.filtreUygulaButon {
+.apply-filter-button {
   display: block;
-  margin: 0 auto;
-  padding: 10px 20px;
-  background-color: #0D47A1;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  margin: var(--space-lg) auto 0;
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--white);
+  color: var(--primary-blue);
+  border: 2px solid var(--white);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-fast);
+  width: 70%; /* Reduced from 100% to make it smaller */
+  max-width: 200px; /* Added max-width to control size */
+  text-align: center; /* Ensure text is centered */
 }
 
-.filtreUygulaButon:hover {
-  background-color: #1565C0;
+.apply-filter-button:hover {
+  background-color: transparent;
+  color: var(--white);
+  border-color: var(--white);
 }
 
-/* === RESPONSIVE === */
-@media (max-width: 750px) {
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
   .sidebar {
-    position: fixed;
-    top: 80px;
-    right: 0;
-    left: auto;
-    width: 200px;
-    height: calc(100vh - 80px);
-    padding: 15px 10px;
-    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
-    margin: 0;
-    background-color: #0D47A1;
-    z-index: 1000;
+    padding: var(--space-md);
   }
 
-  main, .content {
-    margin-right: 180px;
-    margin-left: 0;
+  .filter-container {
+    margin-bottom: var(--space-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    padding: var(--space-sm);
   }
 
-  .Filter-container {
-    margin: 20px 10px;
+  .sidebar-title {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-md);
   }
 
-  .Filter-selector {
-    flex-wrap: nowrap;      /* satır kırmayı kapat */
-    flex-direction: row;    /* yan yana */
-    overflow-x: auto;       /* yatay scroll */
-    gap: 8px;
+  .filter-container {
+    padding: var(--space-sm);
+    margin-bottom: var(--space-sm);
   }
 
-  .Filter-selector select,
-  .Filter-selector button {
-    flex: 1 1 auto;
-    min-width: 120px;
-    width: auto;
+  .filter-selector {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .filter-selector select,
+  .filter-selector button {
+    width: 100%;
+    flex: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    padding: var(--space-xs);
+  }
+
+  .sidebar-title {
+    font-size: var(--font-size-base);
+  }
+
+  .apply-filter-button {
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-sm);
   }
 }

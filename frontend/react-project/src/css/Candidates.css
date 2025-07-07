@@ -4,17 +4,14 @@
   margin: 20px auto;
   padding: 10px;
   margin-right: 50px;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 sütunlu grid */
   gap: 20px;
-  justify-content: flex-start;
 }
 
 /* === Her aday kartı === */
 .candidate-card {
-  flex: 1 1 300px;
-  max-width: 350px;
-  min-width: 300px;
+  width: 100%;
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -521,4 +518,43 @@
   .status-buttons {
     flex-direction: column;
   }
+}
+
+/* İngilizce seviyesi rozeti için stiller */
+.candidate-badge.english-level {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 8px;
+  color: white;
+  background: linear-gradient(135deg, #3a59f3 0%, #2a41c9 100%);
+  box-shadow: 0 2px 4px rgba(58, 89, 243, 0.2);
+  text-transform: uppercase;
+}
+
+/* İngilizce seviyelerine göre farklı renkler */
+.english-level.a1 {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+}
+
+.english-level.a2 {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+}
+
+.english-level.b1 {
+  background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+}
+
+.english-level.b2 {
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+}
+
+.english-level.c1 {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+}
+
+.english-level.c2 {
+  background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
 }

@@ -156,20 +156,28 @@ export default function Candidates() {
         
         const detailedCandidates = await Promise.all(detailPromises);
         
-        setCandidates(detailedCandidates.map(c => ({
-          id: c.candidateId || c.candidateEmail,
-          name: c.candidateName,
-          surname: c.candidateSurname,
-          email: c.candidateEmail,
-          university: c.candidateUniversity,
-          major: c.candidateMajor,
-          jobName: c.jobName,
-          age: c.candidateAge,
-          gpa: c.candidateGPA,
-          currentYear: c.candidateCurrentYear,
-          englishLevel: c.candidateEnglishLevel, // API'den gelen İngilizce seviyesi
-          status: c.applicationStatus || c.status || 'none',
-        })));
+        setCandidates(detailedCandidates.map(c => {
+          // Calculate age if birthDay exists but age doesn't
+          let calculatedAge = c.candidateAge;
+          if (!calculatedAge && c.candidateBirthDay) {
+            calculatedAge = calculateAge(c.candidateBirthDay);
+          }
+          
+          return {
+            id: c.candidateId || c.candidateEmail,
+            name: c.candidateName,
+            surname: c.candidateSurname,
+            email: c.candidateEmail,
+            university: c.candidateUniversity,
+            major: c.candidateMajor,
+            jobName: c.jobName,
+            age: calculatedAge, // Use calculated age or the one from API
+            gpa: c.candidateGPA,
+            currentYear: c.candidateCurrentYear,
+            englishLevel: c.candidateEnglishLevel,
+            status: c.applicationStatus || c.status || 'none',
+          };
+        }));
         
         setLoading(false);
       } catch (error) {
@@ -259,20 +267,28 @@ export default function Candidates() {
   useEffect(() => {
     window.updateCandidates = function (filteredCandidates) {
       setCandidates(
-        filteredCandidates.map(c => ({
-          id: c.candidateId || c.candidateEmail,
-          name: c.candidateName,
-          surname: c.candidateSurname,
-          email: c.candidateEmail,
-          university: c.candidateUniversity,
-          major: c.candidateMajor,
-          jobName: c.jobName,
-          age: c.candidateAge,
-          gpa: c.candidateGPA,
-          currentYear: c.candidateCurrentYear,
-          englishLevel: c.candidateEnglishLevel, // API'den gelen doğru alan
-          status: c.applicationStatus || c.status || 'none',
-        }))
+        filteredCandidates.map(c => {
+          // Calculate age if birthDay exists but age doesn't
+          let calculatedAge = c.candidateAge;
+          if (!calculatedAge && c.candidateBirthDay) {
+            calculatedAge = calculateAge(c.candidateBirthDay);
+          }
+          
+          return {
+            id: c.candidateId || c.candidateEmail,
+            name: c.candidateName,
+            surname: c.candidateSurname,
+            email: c.candidateEmail,
+            university: c.candidateUniversity,
+            major: c.candidateMajor,
+            jobName: c.jobName,
+            age: calculatedAge, // Use calculated age or the one from API
+            gpa: c.candidateGPA,
+            currentYear: c.candidateCurrentYear,
+            englishLevel: c.candidateEnglishLevel,
+            status: c.applicationStatus || c.status || 'none',
+          };
+        })
       );
     };
 
@@ -345,14 +361,21 @@ export default function Candidates() {
     return <div className="error">Error: {error}</div>;
   }
   function calculateAge(birthday) {
-    const birth = new Date(birthday);
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const m = today.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-      age--;
+    if (!birthday) return null;
+    
+    try {
+      const birth = new Date(birthday);
+      const today = new Date();
+      let age = today.getFullYear() - birth.getFullYear();
+      const m = today.getMonth() - birth.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+        age--;
+      }
+      return age;
+    } catch (error) {
+      console.error('Error calculating age:', error);
+      return null;
     }
-    return age;
   }
   return (
 
@@ -368,7 +391,7 @@ export default function Candidates() {
             <div className="candidate-header">
               <div className="candidate-name">
                 {candidate.name} {candidate.surname}
-                {candidate.age && <span className="candidate-age">{candidate.age}</span>}
+                {candidate.age && <span className="candidate-age">{candidate.age} years</span>}
               </div>
               {candidate.englishLevel && (
                 <div className={`candidate-badge english-level ${candidate.englishLevel.toLowerCase()}`}>
