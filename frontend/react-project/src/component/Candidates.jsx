@@ -24,7 +24,7 @@ const updateStatus = async (candidateEmail, jobName, status) => {
     });
 
     console.log('Response status:', response.status);
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Error response:', errorText);
@@ -331,68 +331,87 @@ export default function Candidates() {
             key={candidate.id}
             className={`candidate-card ${statusClasses[candidate.status]}`}
           >
-            <div className="candidate-info">
-              <p>
-                <strong></strong> {candidate.name} {candidate.surname} {candidate.age ? `(${candidate.age})` : ''}
-              </p>
-
-              <p>
-                <strong>University:</strong> {candidate.university || 'Not specified'}
-              </p>
-              <p>
-                <strong>Major:</strong> {candidate.major || 'Not specified'}
-              </p>
-
-              <p>
-                <strong>Class Year:</strong> {candidate.currentYear || 'Not specified'}
-              </p>
+            <div className="candidate-header">
+              <div className="candidate-name">
+                {candidate.name} {candidate.surname}
+                {candidate.age && <span className="candidate-age">{candidate.age}</span>}
+              </div>
+              {candidate.englishLevel && (
+                <div className="candidate-badge english-level">
+                  {candidate.englishLevel.toUpperCase()}
+                </div>
+              )}
             </div>
-            <button
-              className="detail-btn"
-              onClick={() => {
-                // Önce adayı seçili olarak ayarla
-                setSelected(candidate);
 
-                // Ardından API'den detaylı bilgileri al
-                fetch('http://127.0.0.1:8080/userside/get/candidate/details', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    candidateEmail: candidate.email,
-                    jobName: candidate.jobName
+            <div className="candidate-body">
+              <div className="candidate-info-grid">
+                <div className="info-item">
+                  <div className="info-label">University</div>
+                  <div className="info-value">{candidate.university || 'Not specified'}</div>
+                </div>
+
+                <div className="info-item">
+                  <div className="info-label">Major</div>
+                  <div className="info-value">{candidate.major || 'Not specified'}</div>
+                </div>
+
+                <div className="info-item">
+                  <div className="info-label">Class Year</div>
+                  <div className="info-value">{candidate.currentYear || 'Not specified'}</div>
+                </div>
+
+                {candidate.gpa && (
+                  <div className="info-item">
+                    <div className="info-label">GPA</div>
+                    <div className="info-value">{candidate.gpa}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="candidate-footer">
+              <button
+                className="detail-btn"
+                onClick={() => {
+                  setSelected(candidate);
+
+                  fetch('http://127.0.0.1:8080/userside/get/candidate/details', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      candidateEmail: candidate.email,
+                      jobName: candidate.jobName
+                    })
                   })
-                })
-                  .then(response => {
-                    if (!response.ok) {
-                      throw new Error('Failed to fetch candidate details');
-                    }
-                    return response.json();
-                  })
-                  .then(data => {
-                    console.log("API response:", data); // Debug için API yanıtını logla
-                    // API'den gelen detaylı bilgilerle seçili adayı güncelle
-                    setSelected({
-                      ...candidate,
-                      phone: data.candidatePhone || "Not specified",
-                      birthDay: data.candidateBirthDay || "Not specified",
-                      sex: data.candidateSex || "Not specified",
-                      expectedGraduateYear: data.candidateExpectedGraduateYear || "Not specified",
-                      cityName: data.cityName || "Not specified",
-                      applicationStatus: data.applicationStatus || "Not specified",
-                      englishLevel: data.candidateEnglishLevel || "Not specified", // İngilizce seviyesi
-                      // Diğer alanları da ekleyebilirsiniz
+                    .then(response => {
+                      if (!response.ok) {
+                        throw new Error('Failed to fetch candidate details');
+                      }
+                      return response.json();
+                    })
+                    .then(data => {
+                      console.log("API response:", data);
+                      setSelected({
+                        ...candidate,
+                        phone: data.candidatePhone || "Not specified",
+                        birthDay: data.candidateBirthDay || "Not specified",
+                        sex: data.candidateSex || "Not specified",
+                        expectedGraduateYear: data.candidateExpectedGraduateYear || "Not specified",
+                        cityName: data.cityName || "Not specified",
+                        applicationStatus: data.applicationStatus || "Not specified",
+                        englishLevel: data.candidateEnglishLevel || "Not specified",
+                      });
+                    })
+                    .catch(error => {
+                      console.error('Error fetching candidate details:', error);
                     });
-                  })
-                  .catch(error => {
-                    console.error('Error fetching candidate details:', error);
-                    // Hata durumunda mevcut bilgilerle devam et
-                  });
-              }}
-            >
-              Detay
-            </button>
+                }}
+              >
+                <i className="fas fa-info-circle"></i> Details
+              </button>
+            </div>
           </div>
         ))
       )}
@@ -403,7 +422,7 @@ export default function Candidates() {
           onClick={() => setSelected(null)}
         >
           <div
-            className="popup-content"
+            className="popup-content detail-popup"
             onClick={e => e.stopPropagation()}
           >
             <button
@@ -412,147 +431,228 @@ export default function Candidates() {
             >
               &times;
             </button>
-            <h3>Detaylar</h3>
-            <div className="details">
-              {Object.entries(selected).map(([key, value]) => {
-                if (['status', 'id'].includes(key)) return null;
-
-                // Değer kontrolü yap, undefined veya null ise "Not specified" göster
-                const displayValue = value !== undefined && value !== null ? String(value) : "Not specified";
-
-                // Alan isimlerini daha kullanıcı dostu hale getir
-                let label;
-                switch (key) {
-                  case 'university':
-                    label = 'University';
-                    break;
-                  case 'major':
-                    label = 'Major';
-                    break;
-                  case 'currentYear':
-                    label = 'Current Year';
-                    break;
-                  case 'jobName':
-                    label = 'Job';
-                    break;
-                  case 'age':
-                    label = 'Age';
-                    break;
-                  case 'gpa':
-                    label = 'GPA';
-                    break;
-                  case 'email':
-                    label = 'Email';
-                    break;
-                  case 'englishLevel': // İngilizce seviyesi için durum ekledik
-                    label = 'English Level';
-                    break;
-                  // Eksik alanlar için yer tutucu
-                  case 'phone':
-                    label = 'Phone';
-                    break;
-                  case 'expectedGraduateYear':
-                    label = 'Expected Graduation Year';
-                    break;
-                  case 'sex':
-                    label = 'Gender';
-                    break;
-                  default:
-                    label = key.charAt(0).toUpperCase() + key.slice(1);
-                }
-
-                return (
-                  <p key={key}>
-                    <strong>{label}:</strong> {displayValue}
-                  </p>
-                );
-              })}
-
-              {/* Eksik alanlar için bilgi mesajını kaldırdık */}
+            
+            <div className="detail-header">
+              <h2>{selected.name} {selected.surname}</h2>
+              <div className="detail-badges">
+                {selected.englishLevel && (
+                  <span className="detail-badge english">{selected.englishLevel.toUpperCase()}</span>
+                )}
+                {selected.applicationStatus && (
+                  <span className={`detail-badge status-${selected.applicationStatus}`}>
+                    {selected.applicationStatus === 'accept' && 'Onaylandı'}
+                    {selected.applicationStatus === 'pending' && 'Beklemede'}
+                    {selected.applicationStatus === 'reject' && 'Reddedildi'}
+                    {!['accept', 'pending', 'reject'].includes(selected.applicationStatus) && selected.applicationStatus}
+                  </span>
+                )}
+              </div>
             </div>
-
-            <button
-              className="download-jv-btn"
-              onClick={() => downloadCV(selected)}
-            >
-              CV İndir
-            </button>
-
-            <div className="popup-buttons">
-              <button
-                className="btn approve"
-                onClick={() => {
-                  // Onay modalını göster ve onay işlemini hazırla
-                  setConfirmStatus('accept');
-                  setConfirmAction(() => async () => {
-                    try {
-                      await updateStatus(selected.email, selected.jobName, 'accept');
-                      // UI'ı güncelle
-                      setCandidates(prev =>
-                        prev.map(c => (c.email === selected.email ? { ...c, status: 'accept' } : c))
-                      );
-                      setSelected(null);
-                      setShowConfirmModal(false);
-                    } catch (error) {
-                      console.error('Status update failed:', error);
-                      setShowConfirmModal(false);
-                    }
-                  });
-                  setShowConfirmModal(true);
-                }}
-              >
-                Onayla
-              </button>
-              <button
-                className="btn pending"
-                onClick={() => {
-                  // Onay modalını göster ve onay işlemini hazırla
-                  setConfirmStatus('pending');
-                  setConfirmAction(() => async () => {
-                    try {
-                      await updateStatus(selected.email, selected.jobName, 'pending');
-                      // UI'ı güncelle
-                      setCandidates(prev =>
-                        prev.map(c => (c.email === selected.email ? { ...c, status: 'pending' } : c))
-                      );
-                      setSelected(null);
-                      setShowConfirmModal(false);
-                    } catch (error) {
-                      console.error('Status update failed:', error);
-                      setShowConfirmModal(false);
-                    }
-                  });
-                  setShowConfirmModal(true);
-                }}
-              >
-                Beklet
-              </button>
-              <button
-                className="btn reject"
-                onClick={() => {
-                  // Onay modalını göster ve onay işlemini hazırla
-                  setConfirmStatus('reject');
-                  setConfirmAction(() => async () => {
-                    try {
-                      await updateStatus(selected.email, selected.jobName, 'reject');
-                      // UI'ı güncelle
-                      setCandidates(prev =>
-                        prev.map(c => (c.email === selected.email ? { ...c, status: 'reject' } : c))
-                      );
-                      setSelected(null);
-                      setShowConfirmModal(false);
-                    } catch (error) {
-                      console.error('Status update failed:', error);
-                      setShowConfirmModal(false);
-                    }
-                  });
-                  setShowConfirmModal(true);
-                }}
-              >
-                Reddet
-              </button>
+            
+            <div className="detail-content">
+              <div className="detail-section">
+                <h3>Kişisel Bilgiler</h3>
+                <div className="detail-grid">
+                  {selected.email && (
+                    <div className="detail-item">
+                      <div className="detail-icon"><i className="fas fa-envelope"></i></div>
+                      <div className="detail-info">
+                        <div className="detail-label">Email</div>
+                        <div className="detail-value">{selected.email}</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selected.phone && (
+                    <div className="detail-item">
+                      <div className="detail-icon"><i className="fas fa-phone"></i></div>
+                      <div className="detail-info">
+                        <div className="detail-label">Telefon</div>
+                        <div className="detail-value">{selected.phone}</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selected.age && (
+                    <div className="detail-item">
+                      <div className="detail-icon"><i className="fas fa-birthday-cake"></i></div>
+                      <div className="detail-info">
+                        <div className="detail-label">Yaş</div>
+                        <div className="detail-value">{selected.age}</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selected.sex && (
+                    <div className="detail-item">
+                      <div className="detail-icon"><i className="fas fa-user"></i></div>
+                      <div className="detail-info">
+                        <div className="detail-label">Cinsiyet</div>
+                        <div className="detail-value">{selected.sex}</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selected.cityName && (
+                    <div className="detail-item">
+                      <div className="detail-icon"><i className="fas fa-map-marker-alt"></i></div>
+                      <div className="detail-info">
+                        <div className="detail-label">Şehir</div>
+                        <div className="detail-value">{selected.cityName}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="detail-section">
+                <h3>Eğitim Bilgileri</h3>
+                <div className="detail-grid">
+                  {selected.university && (
+                    <div className="detail-item">
+                      <div className="detail-icon"><i className="fas fa-university"></i></div>
+                      <div className="detail-info">
+                        <div className="detail-label">Üniversite</div>
+                        <div className="detail-value">{selected.university}</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selected.major && (
+                    <div className="detail-item">
+                      <div className="detail-icon"><i className="fas fa-graduation-cap"></i></div>
+                      <div className="detail-info">
+                        <div className="detail-label">Bölüm</div>
+                        <div className="detail-value">{selected.major}</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selected.currentYear && (
+                    <div className="detail-item">
+                      <div className="detail-icon"><i className="fas fa-user-graduate"></i></div>
+                      <div className="detail-info">
+                        <div className="detail-label">Sınıf</div>
+                        <div className="detail-value">{selected.currentYear}</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selected.gpa && (
+                    <div className="detail-item">
+                      <div className="detail-icon"><i className="fas fa-chart-line"></i></div>
+                      <div className="detail-info">
+                        <div className="detail-label">GPA</div>
+                        <div className="detail-value">{selected.gpa}</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selected.expectedGraduateYear && (
+                    <div className="detail-item">
+                      <div className="detail-icon"><i className="fas fa-calendar-alt"></i></div>
+                      <div className="detail-info">
+                        <div className="detail-label">Mezuniyet Yılı</div>
+                        <div className="detail-value">{selected.expectedGraduateYear}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="detail-section">
+                <h3>Başvuru Bilgileri</h3>
+                <div className="detail-grid">
+                  {selected.jobName && (
+                    <div className="detail-item">
+                      <div className="detail-icon"><i className="fas fa-briefcase"></i></div>
+                      <div className="detail-info">
+                        <div className="detail-label">Pozisyon</div>
+                        <div className="detail-value">{selected.jobName}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-
+            
+            <div className="detail-actions">
+              <button
+                className="download-cv-btn"
+                onClick={() => downloadCV(selected)}
+              >
+                <i className="fas fa-file-download"></i> CV İndir
+              </button>
+              
+              <div className="status-buttons">
+                <button
+                  className="btn approve"
+                  onClick={() => {
+                    setConfirmStatus('accept');
+                    setConfirmAction(() => async () => {
+                      try {
+                        await updateStatus(selected.email, selected.jobName, 'accept');
+                        setCandidates(prev =>
+                          prev.map(c => (c.email === selected.email ? { ...c, status: 'accept' } : c))
+                        );
+                        setSelected(null);
+                        setShowConfirmModal(false);
+                      } catch (error) {
+                        console.error('Status update failed:', error);
+                        setShowConfirmModal(false);
+                      }
+                    });
+                    setShowConfirmModal(true);
+                  }}
+                >
+                  <i className="fas fa-check"></i> Onayla
+                </button>
+                <button
+                  className="btn pending"
+                  onClick={() => {
+                    setConfirmStatus('pending');
+                    setConfirmAction(() => async () => {
+                      try {
+                        await updateStatus(selected.email, selected.jobName, 'pending');
+                        setCandidates(prev =>
+                          prev.map(c => (c.email === selected.email ? { ...c, status: 'pending' } : c))
+                        );
+                        setSelected(null);
+                        setShowConfirmModal(false);
+                      } catch (error) {
+                        console.error('Status update failed:', error);
+                        setShowConfirmModal(false);
+                      }
+                    });
+                    setShowConfirmModal(true);
+                  }}
+                >
+                  <i className="fas fa-clock"></i> Beklet
+                </button>
+                <button
+                  className="btn reject"
+                  onClick={() => {
+                    setConfirmStatus('reject');
+                    setConfirmAction(() => async () => {
+                      try {
+                        await updateStatus(selected.email, selected.jobName, 'reject');
+                        setCandidates(prev =>
+                          prev.map(c => (c.email === selected.email ? { ...c, status: 'reject' } : c))
+                        );
+                        setSelected(null);
+                        setShowConfirmModal(false);
+                      } catch (error) {
+                        console.error('Status update failed:', error);
+                        setShowConfirmModal(false);
+                      }
+                    });
+                    setShowConfirmModal(true);
+                  }}
+                >
+                  <i className="fas fa-times"></i> Reddet
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

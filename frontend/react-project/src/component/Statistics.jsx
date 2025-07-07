@@ -487,6 +487,15 @@ const Statistics = ({ candidates }) => {
         </div>
 
 
+
+   
+
+ 
+
+     
+    
+      
+
    
       </div>
     </div>

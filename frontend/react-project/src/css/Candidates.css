@@ -3,78 +3,136 @@
   max-width: 100%;
   margin: 20px auto;
   padding: 10px;
-  margin-right: 50px; /* Sidebar ile çakışmayı önlemek için sağ boşluk */
-
+  margin-right: 50px;
   display: flex;
-  flex-wrap: wrap;   /* Taşan kartlar alt satıra iner */
-  gap: 15px;         /* Kartlar arası yatay ve dikey boşluk */
+  flex-wrap: wrap;
+  gap: 20px;
   justify-content: flex-start;
 }
 
 /* === Her aday kartı === */
 .candidate-card {
-  flex: 1 1 48%;     /* %48 genişlik, 2 sütun için */
-  max-width: 35%;
-
+  flex: 1 1 300px;
+  max-width: 350px;
+  min-width: 300px;
   background-color: white;
-  border-radius: 20px;
-  box-shadow: 0 0 6px rgba(0,0,0,0.1);
-  padding: 15px;
-   border: 2px solid rgb(84, 3, 222);   /* Kırmızı border ekledik */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border-left: 5px solid #3a59f3;
+}
+
+.candidate-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+/* Durum renkleri */
+.candidate-approved {
+  border-left: 5px solid #0fd82d;
+}
+
+.candidate-pending {
+  border-left: 5px solid #f3a32b;
+}
+
+.candidate-rejected {
+  border-left: 5px solid #e74c3c;
+}
+
+/* Kart başlığı */
+.candidate-header {
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.candidate-info {
+.candidate-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
   display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  font-weight: 600;
-  max-width: 75%;
-
+  align-items: center;
+  gap: 8px;
 }
 
-.candidate-info p {
-  margin: 0;
-  white-space: nowrap;
+.candidate-age {
+  font-size: 14px;
+  color: #666;
+  font-weight: normal;
 }
 
-/* === Detay butonu === */
-.detail-btn {
-  padding: 6px 12px;
-  background-color: #0d6efd;
-  border: none;
+.candidate-badge {
+  padding: 4px 8px;
   border-radius: 4px;
-  color: white;
-  cursor: pointer;
+  font-size: 12px;
   font-weight: 600;
+  text-transform: uppercase;
+}
+
+.english-level {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+/* Kart gövdesi */
+.candidate-body {
+  padding: 16px;
+}
+
+.candidate-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Kart alt kısmı */
+.candidate-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.detail-btn {
+  padding: 8px 16px;
+  background-color: #3a59f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
   transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .detail-btn:hover {
-  background-color: #084cd8;
-}
-
-/* === Status durum renkleri === */
-.candidate-approved {
-  background-color: #0fd82d;
-  border: solid 3px rgb(7, 144, 23);
-  color: rgb(252, 250, 250);
-
-}
-
-.candidate-pending {
-  background-color: #f3a32b;
-  border: solid 3px rgb(190, 136, 0);
-  color: rgb(252, 250, 250);
-}
-
-.candidate-rejected {
-
-  color: rgb(252, 250, 250);
-  border: solid 3px rgb(225, 7, 7);
-  background-color: #f13232fb;
+  background-color: #2a41c9;
 }
 
 /* === Popup arka plan (overlay) === */
@@ -169,41 +227,298 @@
 .popup-buttons .reject:hover {
   background-color: #c82333;
 }
-@media (max-width: 750px) {
-  .candidates-container {
-    flex-direction: column;
-    align-items: flex-start; /* Sol hizalama */
-    padding: 10px 15px;
-    margin-right: 0;
-  }
-
+@media (max-width: 768px) {
   .candidate-card {
-    width: 100%;
-    max-width: 500px;
-    margin: 0 0 15px 0; /* Alt boşluk bırak, sağdan soldan sıfır */
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 15px;
-    gap: 10px;
+    flex: 1 1 100%;
+    max-width: 100%;
   }
-
-  .candidate-info {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-  }
-
-  .candidate-info p {
-    white-space: normal;
-  }
-
-  .detail-btn {
-    align-self: flex-start;
-    width: auto;
-    padding: 6px 12px;
-    font-size: 14px;
-    margin-top: 10px;
+  
+  .candidate-info-grid {
+    grid-template-columns: 1fr;
   }
 }
 
+/* Onay modalı için stil */
+.confirm-modal {
+  max-width: 350px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  padding: 25px;
+}
 
+.confirm-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.confirm-yes {
+  background-color: #28a745;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.confirm-yes:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.confirm-no {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.confirm-no:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Detay popup'ı için modern stiller */
+.detail-popup {
+  width: 700px;
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  overflow-y: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-header {
+  background: linear-gradient(135deg, #3a59f3 0%, #2a41c9 100%);
+  color: white;
+  padding: 25px 30px;
+  border-radius: 12px 12px 0 0;
+  position: relative;
+}
+
+.detail-header h2 {
+  margin: 0 0 10px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.detail-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.detail-badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.detail-badge.english {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.detail-badge.status-accept {
+  background-color: #0fd82d;
+  color: white;
+}
+
+.detail-badge.status-pending {
+  background-color: #f3a32b;
+  color: white;
+}
+
+.detail-badge.status-reject {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.detail-content {
+  padding: 25px 30px;
+  flex: 1;
+}
+
+.detail-section {
+  margin-bottom: 25px;
+}
+
+.detail-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.detail-icon {
+  width: 36px;
+  height: 36px;
+  background-color: #f0f4ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3a59f3;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.detail-info {
+  flex: 1;
+}
+
+.detail-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.detail-actions {
+  padding: 20px 30px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.download-cv-btn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.download-cv-btn:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+.status-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status-buttons .btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-buttons .approve {
+  background-color: #28a745;
+}
+.status-buttons .approve:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+}
+
+.status-buttons .pending {
+  background-color: #ffc107;
+  color: #212529;
+}
+.status-buttons .pending:hover {
+  background-color: #e0a800;
+  transform: translateY(-2px);
+}
+
+.status-buttons .reject {
+  background-color: #dc3545;
+}
+.status-buttons .reject:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .status-buttons {
+    flex-direction: column;
+  }
+}
