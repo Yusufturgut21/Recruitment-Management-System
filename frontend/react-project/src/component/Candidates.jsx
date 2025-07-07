@@ -88,7 +88,7 @@ export default function Candidates() {
           }
 
           const data = await response.json();
-          processAndSetCandidates(data);
+          await fetchCandidateDetails(data);
           return;
         }
 
@@ -114,7 +114,7 @@ export default function Candidates() {
           allCandidates = [...allCandidates, ...data];
         }
 
-        processAndSetCandidates(allCandidates);
+        await fetchCandidateDetails(allCandidates);
       } catch (error) {
         console.error('Error fetching candidates:', error);
         setError(error.message);
@@ -122,28 +122,61 @@ export default function Candidates() {
       }
     };
 
-    // Adayları işle ve state'e kaydet
-    const processAndSetCandidates = (candidates) => {
-      // Tekrarlanan adayları kaldır
-      const uniqueCandidates = Array.from(new Map(candidates.map(c =>
-        [c.candidateEmail, c])).values());
-
-      setCandidates(uniqueCandidates.map(c => ({
-        id: c.candidateId || c.candidateEmail,
-        name: c.candidateName,
-        surname: c.candidateSurname,
-        email: c.candidateEmail,
-        university: c.candidateUniversity,
-        major: c.candidateMajor,
-        jobName: c.jobName,
-        age: c.candidateAge,
-        gpa: c.candidateGPA,
-        currentYear: c.candidateCurrentYear,
-        englishLevel: c.candidateEnglishLevel || "Not specified",
-        status: c.status || 'none',
-      })));
-
-      setLoading(false);
+    // Her aday için detay bilgilerini çek
+    const fetchCandidateDetails = async (candidates) => {
+      try {
+        // Tekrarlanan adayları kaldır
+        const uniqueCandidates = Array.from(new Map(candidates.map(c =>
+          [c.candidateEmail, c])).values());
+        
+        // Her aday için detay bilgilerini al
+        const detailPromises = uniqueCandidates.map(candidate => 
+          fetch('http://127.0.0.1:8080/userside/get/candidate/details', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              candidateEmail: candidate.candidateEmail,
+              jobName: candidate.jobName
+            })
+          })
+          .then(response => {
+            if (!response.ok) {
+              console.warn(`Could not fetch details for ${candidate.candidateEmail}, using basic info`);
+              return candidate;
+            }
+            return response.json();
+          })
+          .catch(error => {
+            console.error(`Error fetching details for ${candidate.candidateEmail}:`, error);
+            return candidate;
+          })
+        );
+        
+        const detailedCandidates = await Promise.all(detailPromises);
+        
+        setCandidates(detailedCandidates.map(c => ({
+          id: c.candidateId || c.candidateEmail,
+          name: c.candidateName,
+          surname: c.candidateSurname,
+          email: c.candidateEmail,
+          university: c.candidateUniversity,
+          major: c.candidateMajor,
+          jobName: c.jobName,
+          age: c.candidateAge,
+          gpa: c.candidateGPA,
+          currentYear: c.candidateCurrentYear,
+          englishLevel: c.candidateEnglishLevel, // API'den gelen İngilizce seviyesi
+          status: c.applicationStatus || c.status || 'none',
+        })));
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Error processing candidate details:', error);
+        setError(error.message);
+        setLoading(false);
+      }
     };
 
     fetchAllCandidates();
@@ -204,7 +237,8 @@ export default function Candidates() {
   // Eğitim durumuna göre sıralama fonksiyonu
   function sortByEducationalStatus() {
     // Sıralama için seviyeleri belirle (örnek: graduated > senior > junior > sophomore > freshman)
-    const order = ['graduated', 'senior', 'junior', 'sophomore', 'freshman'];
+    const order = ['graduated', 'fourth', 'third', 'second', 'first'];
+  
     setCandidates(prev =>
       [...prev].sort(
         (a, b) =>
@@ -236,8 +270,8 @@ export default function Candidates() {
           age: c.candidateAge,
           gpa: c.candidateGPA,
           currentYear: c.candidateCurrentYear,
-          englishLevel: c.candidateEnglishLevel, // İngilizce seviyesi bilgisini ekledik
-          status: c.status || 'none',
+          englishLevel: c.candidateEnglishLevel, // API'den gelen doğru alan
+          status: c.applicationStatus || c.status || 'none',
         }))
       );
     };
@@ -337,7 +371,7 @@ export default function Candidates() {
                 {candidate.age && <span className="candidate-age">{candidate.age}</span>}
               </div>
               {candidate.englishLevel && (
-                <div className="candidate-badge english-level">
+                <div className={`candidate-badge english-level ${candidate.englishLevel.toLowerCase()}`}>
                   {candidate.englishLevel.toUpperCase()}
                 </div>
               )}

@@ -107,25 +107,40 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
                 })
                 .then(data => {
                   console.log('Filtered candidates:', data);
-                  if (typeof window.updateCandidates === 'function') {
-                    window.updateCandidates(data);
-                  }
-                  // Filtrelenmiş adayları istatistikler için de kaydediyoruz
-                  setCandidates(data.map(c => ({
-                    id: c.candidateId || c.candidateEmail,
-                    name: c.candidateName,
-                    surname: c.candidateSurname,
-                    email: c.candidateEmail,
-                    university: c.candidateUniversity,
-                    major: c.candidateMajor,
-                    jobName: c.jobName,
-                    age: c.candidateAge,
-                    gpa: c.candidateGPA,
-                    currentYear: c.candidateCurrentYear,
-                    englishLevel: c.candidateEnglishLevel,
-                    status: c.status || 'none',
-                  })));
-                  // Alert mesajını kaldırdık
+                  
+                  // Her aday için detaylı bilgileri alalım
+                  const detailPromises = data.map(candidate => 
+                    fetch('http://127.0.0.1:8080/userside/get/candidate/details', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        candidateEmail: candidate.candidateEmail,
+                        jobName: candidate.jobName
+                      })
+                    })
+                    .then(response => {
+                      if (!response.ok) throw new Error('Network response was not ok');
+                      return response.json();
+                    })
+                    .catch(error => {
+                      console.error('Error fetching candidate details:', error);
+                      return candidate; // Hata durumunda orijinal adayı döndür
+                    })
+                  );
+                  
+                  // Tüm detay isteklerinin tamamlanmasını bekleyelim
+                  Promise.all(detailPromises)
+                    .then(detailedCandidates => {
+                      // Detaylı bilgileri alınmış adayları güncelle
+                      if (typeof window.updateCandidates === 'function') {
+                        window.updateCandidates(detailedCandidates);
+                      }
+                      
+                      // İstatistikler için de detaylı bilgileri kaydet
+                      setCandidates(detailedCandidates);
+                    });
                 })
                 .catch(error => {
                   console.error('Error:', error);
@@ -173,19 +188,49 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
                 if (currentCandidates && currentCandidates.length > 0) {
                   // İngilizce seviyesine göre sıralama
                   const levels = ['a1', 'a2', 'b1', 'b2', 'c1', 'c2'];
-                  const sortedCandidates = [...currentCandidates].sort(
-                    (a, b) => {
-                      // candidateEnglishLevel veya englishLevel özelliğini kontrol et
-                      const levelA = ((a.candidateEnglishLevel || a.englishLevel || '')).toLowerCase();
-                      const levelB = ((b.candidateEnglishLevel || b.englishLevel || '')).toLowerCase();
-                      return levels.indexOf(levelB) - levels.indexOf(levelA);
-                    }
+                  
+                  // Önce her aday için detaylı bilgileri alalım
+                  const detailPromises = currentCandidates.map(candidate => 
+                    fetch('http://127.0.0.1:8080/userside/get/candidate/details', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        candidateEmail: candidate.email || candidate.candidateEmail,
+                        jobName: candidate.jobName
+                      })
+                    })
+                    .then(response => {
+                      if (!response.ok) throw new Error('Network response was not ok');
+                      return response.json();
+                    })
+                    .catch(error => {
+                      console.error('Error fetching candidate details:', error);
+                      // Hata durumunda orijinal adayı döndür
+                      return candidate;
+                    })
                   );
                   
-                  // Sıralanmış adayları window.updateCandidates fonksiyonu ile güncelle
-                  if (typeof window.updateCandidates === 'function') {
-                    window.updateCandidates(sortedCandidates);
-                  }
+                  // Tüm detay isteklerinin tamamlanmasını bekleyelim
+                  Promise.all(detailPromises)
+                    .then(detailedCandidates => {
+                      // Detaylı bilgileri alınmış adayları sırala
+                      const sortedCandidates = [...detailedCandidates].sort((a, b) => {
+                        // candidateEnglishLevel özelliğini kontrol et (API'den gelen doğru alan)
+                        const levelA = (a.candidateEnglishLevel || '').toLowerCase();
+                        const levelB = (b.candidateEnglishLevel || '').toLowerCase();
+                        return levels.indexOf(levelB) - levels.indexOf(levelA);
+                      });
+                      
+                      // Sıralanmış adayları window.updateCandidates fonksiyonu ile güncelle
+                      if (typeof window.updateCandidates === 'function') {
+                        window.updateCandidates(sortedCandidates);
+                      }
+                    })
+                    .catch(error => {
+                      console.error('Error sorting candidates by English level:', error);
+                    });
                 } else {
                   console.log('Sıralanacak aday bulunamadı.');
                 }
@@ -199,7 +244,7 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
               }
             }}
           >
-            English Level
+            <i className="fas fa-language"></i> English Level
           </button>
 
           
