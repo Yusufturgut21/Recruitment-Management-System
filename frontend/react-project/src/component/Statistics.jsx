@@ -200,229 +200,9 @@ const Statistics = ({ candidates }) => {
       </div>
 
       <div className="statistics-content">
-        {/* University Distribution */}
-        <div className="chart-row">
-          <div className="wide-chart-card">
-            <h3>Üniversite Dağılımı</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <PieChart>
-                <Pie
-                  data={universityData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={120}
-                  fill="#8884d8"
-                  dataKey="value"
-                  nameKey="name"
-                  label={renderCustomizedLabel}
-                  labelLine={false}
-                >
-                  {universityData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
-                <Legend layout="vertical" align="right" verticalAlign="middle" />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
 
-        {/* Application Status */}
-        <div className="chart-row">
-          <div className="wide-chart-card">
-            <h3>Başvuru Durumları</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={statusData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name">
-                  <Label value="Başvuru Durumu" offset={-50} position="insideBottom" />
-                </XAxis>
-                <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
-                </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
-                <Legend />
-                <Bar dataKey="value" fill="#8884d8" name="Aday Sayısı">
-                  <LabelList dataKey="value" position="top" />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
 
-        {/* GPA Distribution */}
-        <div className="chart-row">
-          <div className="wide-chart-card">
-            <h3>GPA Dağılımı</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={gpaData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name">
-                  <Label value="GPA Aralığı" offset={-50} position="insideBottom" />
-                </XAxis>
-                <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
-                </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
-                <Legend />
-                <Bar dataKey="count" fill="#82ca9d" name="Aday Sayısı">
-                  <LabelList dataKey="count" position="top" />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* English Level */}
-        <div className="chart-row">
-          <div className="wide-chart-card">
-            <h3>İngilizce Seviyeleri</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <PieChart>
-                <Pie
-                  data={English_Level}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={120}
-                  fill="#8884d8"
-                  dataKey="value"
-                  nameKey="name"
-                  label={renderCustomizedLabel}
-                  labelLine={false}
-                >
-                  {English_Level.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
-                <Legend layout="vertical" align="right" verticalAlign="middle" />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Class Year Distribution */}
-        <div className="chart-row">
-          <div className="wide-chart-card">
-            <h3>Sınıf Dağılımı</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={classYearData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name">
-                  <Label value="Sınıf" offset={-50} position="insideBottom" />
-                </XAxis>
-                <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
-                </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
-                <Legend />
-                <Bar dataKey="value" fill="#ffc658" name="Aday Sayısı">
-                  <LabelList dataKey="value" position="top" />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Gender Distribution */}
-        <div className="chart-row">
-          <div className="wide-chart-card">
-            <h3>Cinsiyet Dağılımı</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <PieChart>
-                <Pie
-                  data={genderData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={120}
-                  fill="#8884d8"
-                  dataKey="value"
-                  nameKey="name"
-                  label={renderCustomizedLabel}
-                  labelLine={false}
-                >
-                  {genderData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
-                <Legend layout="vertical" align="right" verticalAlign="middle" />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* City Distribution */}
-        <div className="chart-row">
-          <div className="wide-chart-card">
-            <h3>Şehir Dağılımı</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={cityData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name">
-                  <Label value="Şehirler" offset={-50} position="insideBottom" />
-                </XAxis>
-                <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
-                </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
-                <Legend />
-                <Bar dataKey="value" fill="#8884d8" name="Aday Sayısı">
-                  <LabelList dataKey="value" position="top" />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Age Distribution */}
-        <div className="chart-row">
-          <div className="wide-chart-card">
-            <h3>Yaş Dağılımı</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={ageData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name">
-                  <Label value="Yaş Aralığı" offset={-50} position="insideBottom" />
-                </XAxis>
-                <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
-                </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
-                <Legend />
-                <Bar dataKey="count" fill="#82ca9d" name="Aday Sayısı">
-                  <LabelList dataKey="count" position="top" />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Graduation Year Distribution */}
-        <div className="chart-row">
-          <div className="wide-chart-card">
-            <h3>Mezuniyet Yılı Dağılımı</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={graduationYearData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name">
-                  <Label value="Mezuniyet Yılı" offset={-50} position="insideBottom" />
-                </XAxis>
-                <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
-                </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
-                <Legend />
-                <Bar dataKey="value" fill="#ffc658" name="Aday Sayısı">
-                  <LabelList dataKey="value" position="top" />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Job Position Distribution */}
+          {/* Job Position Distribution */}
         <div className="chart-row">
           <div className="wide-chart-card">
             <h3>Başvurulan Pozisyonlar</h3>
@@ -450,7 +230,167 @@ const Statistics = ({ candidates }) => {
           </div>
         </div>
 
-        {/* Major Distribution */}
+
+
+        {/* Application Status */}
+        <div className="chart-row">
+          <div className="wide-chart-card">
+            <h3>Başvuru Durumları</h3>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={statusData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name">
+                  <Label value="Başvuru Durumu" offset={-50} position="insideBottom" />
+                </XAxis>
+                <YAxis>
+                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                </YAxis>
+                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Legend />
+                <Bar dataKey="value" fill="#8884d8" name="Aday Sayısı">
+                  <LabelList dataKey="value" position="top" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+               {/* City Distribution */}
+        <div className="chart-row">
+          <div className="wide-chart-card">
+            <h3>Şehir Dağılımı</h3>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={cityData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name">
+                  <Label value="Şehirler" offset={-50} position="insideBottom" />
+                </XAxis>
+                <YAxis>
+                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                </YAxis>
+                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Legend />
+                <Bar dataKey="value" fill="#8884d8" name="Aday Sayısı">
+                  <LabelList dataKey="value" position="top" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+             {/* Gender Distribution */}
+        <div className="chart-row">
+          <div className="wide-chart-card">
+            <h3>Cinsiyet Dağılımı</h3>
+            <ResponsiveContainer width="100%" height={400}>
+              <PieChart>
+                <Pie
+                  data={genderData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={120}
+                  fill="#8884d8"
+                  dataKey="value"
+                  nameKey="name"
+                  label={renderCustomizedLabel}
+                  labelLine={false}
+                >
+                  {genderData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Legend layout="vertical" align="right" verticalAlign="middle" />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+           {/* Age Distribution */}
+        <div className="chart-row">
+          <div className="wide-chart-card">
+            <h3>Yaş Dağılımı</h3>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={ageData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name">
+                  <Label value="Yaş Aralığı" offset={-50} position="insideBottom" />
+                </XAxis>
+                <YAxis>
+                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                </YAxis>
+                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Legend />
+                <Bar dataKey="count" fill="#82ca9d" name="Aday Sayısı">
+                  <LabelList dataKey="count" position="top" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        
+                {/* English Level */}
+        <div className="chart-row">
+          <div className="wide-chart-card">
+            <h3>İngilizce Seviyeleri</h3>
+            <ResponsiveContainer width="100%" height={400}>
+              <PieChart>
+                <Pie
+                  data={English_Level}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={120}
+                  fill="#8884d8"
+                  dataKey="value"
+                  nameKey="name"
+                  label={renderCustomizedLabel}
+                  labelLine={false}
+                >
+                  {English_Level.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Legend layout="vertical" align="right" verticalAlign="middle" />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+       
+
+
+        
+             {/* University Distribution */}
+        <div className="chart-row">
+          <div className="wide-chart-card">
+            <h3>Üniversite Dağılımı</h3>
+            <ResponsiveContainer width="100%" height={400}>
+              <PieChart>
+                <Pie
+                  data={universityData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={120}
+                  fill="#8884d8"
+                  dataKey="value"
+                  nameKey="name"
+                  label={renderCustomizedLabel}
+                  labelLine={false}
+                >
+                  {universityData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Legend layout="vertical" align="right" verticalAlign="middle" />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+             {/* Major Distribution */}
         <div className="chart-row">
           <div className="wide-chart-card">
             <h3>Bölüm Dağılımı</h3>
@@ -472,12 +412,87 @@ const Statistics = ({ candidates }) => {
             </ResponsiveContainer>
           </div>
         </div>
+
+        
+         {/* Class Year Distribution */}
+        <div className="chart-row">
+          <div className="wide-chart-card">
+            <h3>Sınıf Dağılımı</h3>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={classYearData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name">
+                  <Label value="Sınıf" offset={-50} position="insideBottom" />
+                </XAxis>
+                <YAxis>
+                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                </YAxis>
+                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Legend />
+                <Bar dataKey="value" fill="#ffc658" name="Aday Sayısı">
+                  <LabelList dataKey="value" position="top" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+            {/* Graduation Year Distribution */}
+        <div className="chart-row">
+          <div className="wide-chart-card">
+            <h3>Mezuniyet Yılı Dağılımı</h3>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={graduationYearData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name">
+                  <Label value="Mezuniyet Yılı" offset={-50} position="insideBottom" />
+                </XAxis>
+                <YAxis>
+                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                </YAxis>
+                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Legend />
+                <Bar dataKey="value" fill="#ffc658" name="Aday Sayısı">
+                  <LabelList dataKey="value" position="top" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+
+
+
+        {/* GPA Distribution */}
+        <div className="chart-row">
+          <div className="wide-chart-card">
+            <h3>GPA Dağılımı</h3>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={gpaData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name">
+                  <Label value="GPA Aralığı" offset={-50} position="insideBottom" />
+                </XAxis>
+                <YAxis>
+                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                </YAxis>
+                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Legend />
+                <Bar dataKey="count" fill="#82ca9d" name="Aday Sayısı">
+                  <LabelList dataKey="count" position="top" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+
+   
       </div>
     </div>
   );
 };
 
 export default Statistics;
-
 
 

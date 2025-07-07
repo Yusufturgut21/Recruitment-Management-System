@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../css/Candidates.css';
 // Candidates.js en üste ekleyin
 
+
 const updateStatus = async (candidateEmail, jobName, status) => {
   try {
     console.log('Gönderilen veri:', {
@@ -32,7 +33,7 @@ const updateStatus = async (candidateEmail, jobName, status) => {
 
     const result = await response.text();
     console.log('Success response:', result);
-    alert(`Başvuru durumu güncellendi: ${result}`);
+    // Alert mesajını kaldırdık
     return result;
   } catch (error) {
     console.error('Hata oluştu:', error);
@@ -54,6 +55,10 @@ export default function Candidates() {
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // State'e onay modalı için yeni değişkenler ekleyelim
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const [confirmStatus, setConfirmStatus] = useState('');
 
   // Sayfa yüklendiğinde adayları getir
   useEffect(() => {
@@ -174,6 +179,7 @@ export default function Candidates() {
     };
   }, []);
 
+
   // İngilizce seviyesine göre sıralama fonksiyonu
   function sortByEnglishLevel() {
     // Sıralama için seviyeleri belirle
@@ -241,6 +247,7 @@ export default function Candidates() {
     };
   }, []);
 
+
   // updateStatus fonksiyonu artık global olarak tanımlanmış
   // const updateStatus = (id, newStatus) => {
   //   setCandidates(prev =>
@@ -294,6 +301,7 @@ export default function Candidates() {
         alert('CV indirilirken bir hata oluştu: ' + err.message);
       });
   };
+
 
   if (loading) {
     return <div className="loader">Loading candidates...</div>;
@@ -473,51 +481,72 @@ export default function Candidates() {
             <div className="popup-buttons">
               <button
                 className="btn approve"
-                onClick={async () => {
-                  try {
-                    await updateStatus(selected.email, selected.jobName, 'acces');
-                    // UI'ı güncelle
-                    setCandidates(prev =>
-                      prev.map(c => (c.email === selected.email ? { ...c, status: 'acces' } : c))
-                    );
-                    setSelected(null);
-                  } catch (error) {
-                    console.error('Status update failed:', error);
-                  }
+                onClick={() => {
+                  // Onay modalını göster ve onay işlemini hazırla
+                  setConfirmStatus('accept');
+                  setConfirmAction(() => async () => {
+                    try {
+                      await updateStatus(selected.email, selected.jobName, 'accept');
+                      // UI'ı güncelle
+                      setCandidates(prev =>
+                        prev.map(c => (c.email === selected.email ? { ...c, status: 'accept' } : c))
+                      );
+                      setSelected(null);
+                      setShowConfirmModal(false);
+                    } catch (error) {
+                      console.error('Status update failed:', error);
+                      setShowConfirmModal(false);
+                    }
+                  });
+                  setShowConfirmModal(true);
                 }}
               >
                 Onayla
               </button>
               <button
                 className="btn pending"
-                onClick={async () => {
-                  try {
-                    await updateStatus(selected.email, selected.jobName, 'pending');
-                    // UI'ı güncelle
-                    setCandidates(prev =>
-                      prev.map(c => (c.email === selected.email ? { ...c, status: 'pending' } : c))
-                    );
-                    setSelected(null);
-                  } catch (error) {
-                    console.error('Status update failed:', error);
-                  }
+                onClick={() => {
+                  // Onay modalını göster ve onay işlemini hazırla
+                  setConfirmStatus('pending');
+                  setConfirmAction(() => async () => {
+                    try {
+                      await updateStatus(selected.email, selected.jobName, 'pending');
+                      // UI'ı güncelle
+                      setCandidates(prev =>
+                        prev.map(c => (c.email === selected.email ? { ...c, status: 'pending' } : c))
+                      );
+                      setSelected(null);
+                      setShowConfirmModal(false);
+                    } catch (error) {
+                      console.error('Status update failed:', error);
+                      setShowConfirmModal(false);
+                    }
+                  });
+                  setShowConfirmModal(true);
                 }}
               >
                 Beklet
               </button>
               <button
                 className="btn reject"
-                onClick={async () => {
-                  try {
-                    await updateStatus(selected.email, selected.jobName, 'reject');
-                    // UI'ı güncelle
-                    setCandidates(prev =>
-                      prev.map(c => (c.email === selected.email ? { ...c, status: 'reject' } : c))
-                    );
-                    setSelected(null);
-                  } catch (error) {
-                    console.error('Status update failed:', error);
-                  }
+                onClick={() => {
+                  // Onay modalını göster ve onay işlemini hazırla
+                  setConfirmStatus('reject');
+                  setConfirmAction(() => async () => {
+                    try {
+                      await updateStatus(selected.email, selected.jobName, 'reject');
+                      // UI'ı güncelle
+                      setCandidates(prev =>
+                        prev.map(c => (c.email === selected.email ? { ...c, status: 'reject' } : c))
+                      );
+                      setSelected(null);
+                      setShowConfirmModal(false);
+                    } catch (error) {
+                      console.error('Status update failed:', error);
+                      setShowConfirmModal(false);
+                    }
+                  });
+                  setShowConfirmModal(true);
                 }}
               >
                 Reddet
@@ -527,8 +556,39 @@ export default function Candidates() {
           </div>
         </div>
       )}
+      {/* Onay modalı */}
+      {showConfirmModal && (
+        <div
+          className="popup-overlay"
+          onClick={() => setShowConfirmModal(false)}
+        >
+          <div
+            className="popup-content confirm-modal"
+            onClick={e => e.stopPropagation()}
+          >
+            <h3>Onay</h3>
+            <p>
+              {confirmStatus === 'accept' && "Adayı onayladığınızdan emin misiniz?"}
+              {confirmStatus === 'pending' && "Adayı bekletmek istediğinizden emin misiniz?"}
+              {confirmStatus === 'reject' && "Adayı reddetmek istediğinizden emin misiniz?"}
+            </p>
+            <div className="confirm-buttons">
+              <button
+                className="btn confirm-yes"
+                onClick={confirmAction}
+              >
+                Onayla
+              </button>
+              <button
+                className="btn confirm-no"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                İptal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-

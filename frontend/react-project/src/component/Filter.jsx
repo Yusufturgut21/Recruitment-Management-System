@@ -65,7 +65,15 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
       <div className="filter-card-content">
         {/* Sol taraf */}
         <div className="filter-left">
-          <h3 className="filter-header">Filter Groups</h3>
+          <div className="filter-header-container">
+            <h3 className="filter-header">Filter Groups</h3>
+            <button 
+              className="filters-send statistics-btn-modern"
+              onClick={fetchCandidates}
+            >
+              Statistics
+            </button>
+          </div>
 
           {filtersBuffers.length === 0 && <p>No Filter Groups added yet</p>}
 
@@ -117,23 +125,18 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
                     englishLevel: c.candidateEnglishLevel,
                     status: c.status || 'none',
                   })));
-                  alert('Tüm filtre grupları başarıyla gönderildi.');
+                  // Alert mesajını kaldırdık
                 })
                 .catch(error => {
                   console.error('Error:', error);
-                  alert('Gönderimde hata oluştu.');
+                  alert('Gönderimde hata oluştu.'); // Hata durumunda alert hala gösteriliyor
                 });
             }}
           >
             APPLY FILTERS
           </button>
           
-          <button 
-            className='statistics-btn'
-            onClick={fetchCandidates} // Tıklanınca aday verilerini getir ve popup'ı aç
-          >
-            Statistics
-          </button> 
+        
         </div>
 
         <div className="filter-divider"></div>
@@ -163,68 +166,43 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
           <button
             className="action-btn"
             onClick={() => {
-              // Önce tüm adayların email ve jobName bilgilerini alalım
-              fetch('http://localhost:8080/userside/filter/candidates', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify([{}]), // Boş filtre ile tüm adayları getir
-              })
-                .then(response => {
-                  if (!response.ok) throw new Error('Network response was not ok');
-                  return response.json();
-                })
-                .then(data => {
-                  // Her aday için detaylı bilgileri alalım
-                  const detailPromises = data.map(candidate => 
-                    fetch('http://127.0.0.1:8080/userside/get/candidate/details', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        candidateEmail: candidate.candidateEmail,
-                        jobName: candidate.jobName
-                      })
-                    })
-                    .then(response => {
-                      if (!response.ok) throw new Error('Network response was not ok');
-                      return response.json();
-                    })
-                  );
-                  
-                  // Tüm detay isteklerinin tamamlanmasını bekleyelim
-                  return Promise.all(detailPromises);
-                })
-                .then(detailedCandidates => {
+              // Mevcut adayları al (window.getCurrentCandidates fonksiyonunu çağıran bileşenden)
+              if (typeof window.getCurrentCandidates === 'function') {
+                const currentCandidates = window.getCurrentCandidates();
+                
+                if (currentCandidates && currentCandidates.length > 0) {
                   // İngilizce seviyesine göre sıralama
                   const levels = ['a1', 'a2', 'b1', 'b2', 'c1', 'c2'];
-                  const sortedCandidates = [...detailedCandidates].sort(
-                    (a, b) =>
-                      levels.indexOf((b.candidateEnglishLevel || '').toLowerCase()) -
-                      levels.indexOf((a.candidateEnglishLevel || '').toLowerCase())
+                  const sortedCandidates = [...currentCandidates].sort(
+                    (a, b) => {
+                      // candidateEnglishLevel veya englishLevel özelliğini kontrol et
+                      const levelA = ((a.candidateEnglishLevel || a.englishLevel || '')).toLowerCase();
+                      const levelB = ((b.candidateEnglishLevel || b.englishLevel || '')).toLowerCase();
+                      return levels.indexOf(levelB) - levels.indexOf(levelA);
+                    }
                   );
-                  
-                  // Statü bilgisini koruyarak adayları güncelle
-                  const candidatesWithStatus = sortedCandidates.map(candidate => ({
-                    ...candidate,
-                    status: candidate.applicationStatus // Statü bilgisini koru
-                  }));
                   
                   // Sıralanmış adayları window.updateCandidates fonksiyonu ile güncelle
                   if (typeof window.updateCandidates === 'function') {
-                    window.updateCandidates(candidatesWithStatus);
+                    window.updateCandidates(sortedCandidates);
                   }
-                })
-                .catch(error => {
-                  console.error('Error fetching candidates:', error);
-                  alert('Adaylar sıralanırken hata oluştu.');
-                });
+                } else {
+                  console.log('Sıralanacak aday bulunamadı.');
+                }
+              } else {
+                // Eğer getCurrentCandidates fonksiyonu yoksa, window.sortCandidatesByEnglishLevel fonksiyonunu çağır
+                if (typeof window.sortCandidatesByEnglishLevel === 'function') {
+                  window.sortCandidatesByEnglishLevel();
+                } else {
+                  console.log('Sıralama fonksiyonu bulunamadı.');
+                }
+              }
             }}
           >
             English Level
           </button>
+
+          
           <button
             className="action-btn"
             onClick={() => {
@@ -282,5 +260,3 @@ function Filter({ filtersBuffers, setFiltersBuffers }) {
 }
 
 export default Filter;
-
-
