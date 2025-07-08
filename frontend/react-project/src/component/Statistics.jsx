@@ -33,10 +33,10 @@ const Statistics = ({ candidates }) => {
 
   const prepareStatusData = () => {
     const statusMap = {
-      accept: 'Onaylanan',
-      reject: 'Reddedilen',
-      pending: 'Bekleyen',
-      none: 'Belirtilmemiş'
+      accept: 'Approved',
+      reject: 'Rejected',
+      pending: 'Pending',
+      none: 'Unspecified'
     };
     const data = candidates.reduce((acc, candidate) => {
       const status = candidate.applicationStatus;
@@ -49,11 +49,10 @@ const Statistics = ({ candidates }) => {
 
   const prepareGPAData = () => {
     const ranges = [
-      { name: '0-2', min: 0, max: 2 },
-      { name: '2-2.5', min: 2, max: 2.5 },
-      { name: '2.5-3', min: 2.5, max: 3 },
-      { name: '3-3.5', min: 3, max: 3.5 },
-      { name: '3.5-4', min: 3.5, max: 4.01 }
+      { name: '2.00-2.49', min: 2, max: 2.49 },
+      { name: '2.50-2.99', min: 2.5, max: 2.99 },
+      { name: '3.00-3.49', min: 3.00, max: 3.49 },
+      { name: '3.50-4.00', min: 3.50, max: 4.00 },
     ];
     return ranges.map(range => ({
       name: range.name,
@@ -63,12 +62,12 @@ const Statistics = ({ candidates }) => {
 
   const prepareEnglishLevelData = () => {
     const levelMap = {
-      a1: 'A1 (Başlangıç)',
-      a2: 'A2 (Temel)',
-      b1: 'B1 (Orta)',
-      b2: 'B2 (Orta Üstü)',
-      c1: 'C1 (İleri)',
-      c2: 'C2 (Ana Dil)'
+      a1: 'A1',
+      a2: 'A2',
+      b1: 'B1',
+      b2: 'B2',
+      c1: 'C1',
+      c2: 'C2'
     };
     const data = candidates.reduce((acc, candidate) => {
       const englishLevel = candidate.candidateEnglishLevel;
@@ -81,11 +80,11 @@ const Statistics = ({ candidates }) => {
 
   const prepareClassYearData = () => {
     const yearMap = {
-      first: '1. Sınıf',
-      second: '2. Sınıf',
-      third: '3. Sınıf',
-      fourth: '4. Sınıf',
-      graduated: 'Mezun'
+      first: '1st grade',
+      second: '2nd grade',
+      third: '3rd grade',
+      fourth: '4th grade',
+      graduated: 'Graduated'
     };
     const data = candidates.reduce((acc, candidate) => {
       const currentYear = candidate.candidateCurrentYear;
@@ -99,9 +98,9 @@ const Statistics = ({ candidates }) => {
   // New statistics functions
   const prepareGenderData = () => {
     const genderMap = {
-      male: 'Erkek',
-      female: 'Kadın',
-      other: 'Diğer'
+      male: 'Male',
+      female: 'Female',
+      other: 'Unspecified'
     };
     const data = candidates.reduce((acc, candidate) => {
       const sex = candidate.candidateSex;
@@ -195,17 +194,17 @@ const Statistics = ({ candidates }) => {
   return (
     <div className="statistics-container">
       <div className="statistics-header">
-        <h2>Aday İstatistikleri</h2>
-        <div className="total-candidates">Toplam Aday: {candidates.length}</div>
+        <h2>Candidate Statistics</h2>
+        <div className="total-candidates">Total Candidates: {candidates.length}</div>
       </div>
 
       <div className="statistics-content">
 
 
-          {/* Job Position Distribution */}
+        {/* Job Position Distribution */}
         <div className="chart-row">
           <div className="wide-chart-card">
-            <h3>Başvurulan Pozisyonlar</h3>
+            <h3>Applied Positions</h3>
             <ResponsiveContainer width="100%" height={400}>
               <PieChart>
                 <Pie
@@ -223,7 +222,7 @@ const Statistics = ({ candidates }) => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Tooltip formatter={(value, name, props) => [`${value} candidate`, props.payload.name]} />
                 <Legend layout="vertical" align="right" verticalAlign="middle" />
               </PieChart>
             </ResponsiveContainer>
@@ -235,19 +234,19 @@ const Statistics = ({ candidates }) => {
         {/* Application Status */}
         <div className="chart-row">
           <div className="wide-chart-card">
-            <h3>Başvuru Durumları</h3>
+            <h3>Application Status</h3>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={statusData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="Başvuru Durumu" offset={-50} position="insideBottom" />
+                  <Label value="Aplication Status" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                  <Label value="Number of Candidates" angle={-90} position="insideLeft" />
                 </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Tooltip formatter={(value, name, props) => [`${value} candidate`, props.payload.name]} />
                 <Legend />
-                <Bar dataKey="value" fill="#8884d8" name="Aday Sayısı">
+                <Bar dataKey="value" fill="#8884d8" name="Number of Candidates">
                   <LabelList dataKey="value" position="top" />
                 </Bar>
               </BarChart>
@@ -255,22 +254,23 @@ const Statistics = ({ candidates }) => {
           </div>
         </div>
 
-               {/* City Distribution */}
+        {/* City Distribution */}
         <div className="chart-row">
           <div className="wide-chart-card">
-            <h3>Şehir Dağılımı</h3>
+            <h3>Office Preferences
+            </h3>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={cityData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="Şehirler" offset={-50} position="insideBottom" />
+                  <Label value="Cities" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                  <Label value="Number of Candidates" angle={-90} position="insideLeft" />
                 </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Tooltip formatter={(value, name, props) => [`${value} candidate`, props.payload.name]} />
                 <Legend />
-                <Bar dataKey="value" fill="#8884d8" name="Aday Sayısı">
+                <Bar dataKey="value" fill="#8884d8" name="Number of Candidates">
                   <LabelList dataKey="value" position="top" />
                 </Bar>
               </BarChart>
@@ -278,10 +278,10 @@ const Statistics = ({ candidates }) => {
           </div>
         </div>
 
-             {/* Gender Distribution */}
+        {/* Gender Distribution */}
         <div className="chart-row">
           <div className="wide-chart-card">
-            <h3>Cinsiyet Dağılımı</h3>
+            <h3>Gender Distribution</h3>
             <ResponsiveContainer width="100%" height={400}>
               <PieChart>
                 <Pie
@@ -299,29 +299,29 @@ const Statistics = ({ candidates }) => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Tooltip formatter={(value, name, props) => [`${value} candidate`, props.payload.name]} />
                 <Legend layout="vertical" align="right" verticalAlign="middle" />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-           {/* Age Distribution */}
+        {/* Age Distribution */}
         <div className="chart-row">
           <div className="wide-chart-card">
-            <h3>Yaş Dağılımı</h3>
+            <h3>Age Distribution</h3>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={ageData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="Yaş Aralığı" offset={-50} position="insideBottom" />
+                  <Label value="Age Range" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                  <Label value="Number of Candidates" angle={-90} position="insideLeft" />
                 </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Tooltip formatter={(value, name, props) => [`${value} candidate`, props.payload.name]} />
                 <Legend />
-                <Bar dataKey="count" fill="#82ca9d" name="Aday Sayısı">
+                <Bar dataKey="count" fill="#82ca9d" name="Number of Candidates">
                   <LabelList dataKey="count" position="top" />
                 </Bar>
               </BarChart>
@@ -329,11 +329,11 @@ const Statistics = ({ candidates }) => {
           </div>
         </div>
 
-        
-                {/* English Level */}
+
+        {/* English Level */}
         <div className="chart-row">
           <div className="wide-chart-card">
-            <h3>İngilizce Seviyeleri</h3>
+            <h3>English Levels</h3>
             <ResponsiveContainer width="100%" height={400}>
               <PieChart>
                 <Pie
@@ -351,21 +351,21 @@ const Statistics = ({ candidates }) => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Tooltip formatter={(value, name, props) => [`${value} candidate`, props.payload.name]} />
                 <Legend layout="vertical" align="right" verticalAlign="middle" />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-       
 
 
-        
-             {/* University Distribution */}
+
+
+        {/* University Distribution */}
         <div className="chart-row">
           <div className="wide-chart-card">
-            <h3>Üniversite Dağılımı</h3>
+            <h3>University Distribution</h3>
             <ResponsiveContainer width="100%" height={400}>
               <PieChart>
                 <Pie
@@ -383,29 +383,29 @@ const Statistics = ({ candidates }) => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Tooltip formatter={(value, name, props) => [`${value} candidate`, props.payload.name]} />
                 <Legend layout="vertical" align="right" verticalAlign="middle" />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-             {/* Major Distribution */}
+        {/* Major Distribution */}
         <div className="chart-row">
           <div className="wide-chart-card">
-            <h3>Bölüm Dağılımı</h3>
+            <h3>Major Distribution</h3>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={majorData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="Bölümler" offset={-50} position="insideBottom" />
+                  <Label value="Majors" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                  <Label value="Number of Candidates" angle={-90} position="insideLeft" />
                 </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Tooltip formatter={(value, name, props) => [`${value} candidate`, props.payload.name]} />
                 <Legend />
-                <Bar dataKey="value" fill="#8884d8" name="Aday Sayısı">
+                <Bar dataKey="value" fill="#8884d8" name="Number of Candidates">
                   <LabelList dataKey="value" position="top" />
                 </Bar>
               </BarChart>
@@ -413,23 +413,23 @@ const Statistics = ({ candidates }) => {
           </div>
         </div>
 
-        
-         {/* Class Year Distribution */}
+
+        {/* Class Year Distribution */}
         <div className="chart-row">
           <div className="wide-chart-card">
-            <h3>Sınıf Dağılımı</h3>
+            <h3>Class Distribution</h3>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={classYearData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="Sınıf" offset={-50} position="insideBottom" />
+                  <Label value="Class" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                  <Label value="Number of Candidates" angle={-90} position="insideLeft" />
                 </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Tooltip formatter={(value, name, props) => [`${value} candidate`, props.payload.name]} />
                 <Legend />
-                <Bar dataKey="value" fill="#ffc658" name="Aday Sayısı">
+                <Bar dataKey="value" fill="#ffc658" name="Number of Candidates">
                   <LabelList dataKey="value" position="top" />
                 </Bar>
               </BarChart>
@@ -437,22 +437,22 @@ const Statistics = ({ candidates }) => {
           </div>
         </div>
 
-            {/* Graduation Year Distribution */}
+        {/* Graduation Year Distribution */}
         <div className="chart-row">
           <div className="wide-chart-card">
-            <h3>Mezuniyet Yılı Dağılımı</h3>
+            <h3>Graduation Year Distribution</h3>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={graduationYearData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="Mezuniyet Yılı" offset={-50} position="insideBottom" />
+                  <Label value="Graduation Year" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                  <Label value="Number of Candidates" angle={-90} position="insideLeft" />
                 </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Tooltip formatter={(value, name, props) => [`${value} candidate`, props.payload.name]} />
                 <Legend />
-                <Bar dataKey="value" fill="#ffc658" name="Aday Sayısı">
+                <Bar dataKey="value" fill="#ffc658" name="Number of Candidates">
                   <LabelList dataKey="value" position="top" />
                 </Bar>
               </BarChart>
@@ -466,19 +466,19 @@ const Statistics = ({ candidates }) => {
         {/* GPA Distribution */}
         <div className="chart-row">
           <div className="wide-chart-card">
-            <h3>GPA Dağılımı</h3>
+            <h3>GPA Distribution</h3>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={gpaData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name">
-                  <Label value="GPA Aralığı" offset={-50} position="insideBottom" />
+                  <Label value="GPA Range" offset={-50} position="insideBottom" />
                 </XAxis>
                 <YAxis>
-                  <Label value="Aday Sayısı" angle={-90} position="insideLeft" />
+                  <Label value="Number of Candidates" angle={-90} position="insideLeft" />
                 </YAxis>
-                <Tooltip formatter={(value, name, props) => [`${value} aday`, props.payload.name]} />
+                <Tooltip formatter={(value, name, props) => [`${value} candidate`, props.payload.name]} />
                 <Legend />
-                <Bar dataKey="count" fill="#82ca9d" name="Aday Sayısı">
+                <Bar dataKey="count" fill="#82ca9d" name="Number of Candidates">
                   <LabelList dataKey="count" position="top" />
                 </Bar>
               </BarChart>
@@ -488,15 +488,8 @@ const Statistics = ({ candidates }) => {
 
 
 
-   
 
- 
 
-     
-    
-      
-
-   
       </div>
     </div>
   );

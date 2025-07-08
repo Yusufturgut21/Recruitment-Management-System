@@ -59,6 +59,7 @@ export default function Candidates() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
   const [confirmStatus, setConfirmStatus] = useState('');
+  const [hideStatusButtons, setHideStatusButtons] = useState(false);
 
   // Sayfa yüklendiğinde adayları getir
   useEffect(() => {
@@ -485,6 +486,7 @@ export default function Candidates() {
             <button
               className="close-btn"
               onClick={() => setSelected(null)}
+              style={{ position: 'absolute', top: '10px', right: '10px', zIndex: '1000', background: 'white', color: 'red', fontSize: '24px', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}
             >
               &times;
             </button>
@@ -497,9 +499,9 @@ export default function Candidates() {
                 )}
                 {selected.applicationStatus && (
                   <span className={`detail-badge status-${selected.applicationStatus}`}>
-                    {selected.applicationStatus === 'accept' && 'Onaylandı'}
-                    {selected.applicationStatus === 'pending' && 'Beklemede'}
-                    {selected.applicationStatus === 'reject' && 'Reddedildi'}
+                    {selected.applicationStatus === 'accept' && 'Approved'}
+                    {selected.applicationStatus === 'pending' && 'Pending'}
+                    {selected.applicationStatus === 'reject' && 'Rejected'}
                     {!['accept', 'pending', 'reject'].includes(selected.applicationStatus) && selected.applicationStatus}
                   </span>
                 )}
@@ -507,12 +509,12 @@ export default function Candidates() {
             </div>
             
             <div className="detail-content">
+           
               <div className="detail-section">
-                <h3>Kişisel Bilgiler</h3>
+                <h3>Personal Information</h3>
                 <div className="detail-grid">
                   {selected.email && (
                     <div className="detail-item">
-                      <div className="detail-icon"><i className="fas fa-envelope"></i></div>
                       <div className="detail-info">
                         <div className="detail-label">Email</div>
                         <div className="detail-value">{selected.email}</div>
@@ -522,9 +524,8 @@ export default function Candidates() {
                   
                   {selected.phone && (
                     <div className="detail-item">
-                      <div className="detail-icon"><i className="fas fa-phone"></i></div>
                       <div className="detail-info">
-                        <div className="detail-label">Telefon</div>
+                        <div className="detail-label">phone number</div>
                         <div className="detail-value">{selected.phone}</div>
                       </div>
                     </div>
@@ -532,9 +533,8 @@ export default function Candidates() {
                   
                   {selected.age && (
                     <div className="detail-item">
-                      <div className="detail-icon"><i className="fas fa-birthday-cake"></i></div>
                       <div className="detail-info">
-                        <div className="detail-label">Yaş</div>
+                        <div className="detail-label">Age</div>
                         <div className="detail-value">{selected.age}</div>
                       </div>
                     </div>
@@ -542,9 +542,8 @@ export default function Candidates() {
                   
                   {selected.sex && (
                     <div className="detail-item">
-                      <div className="detail-icon"><i className="fas fa-user"></i></div>
                       <div className="detail-info">
-                        <div className="detail-label">Cinsiyet</div>
+                        <div className="detail-label">Gender</div>
                         <div className="detail-value">{selected.sex}</div>
                       </div>
                     </div>
@@ -552,9 +551,8 @@ export default function Candidates() {
                   
                   {selected.cityName && (
                     <div className="detail-item">
-                      <div className="detail-icon"><i className="fas fa-map-marker-alt"></i></div>
                       <div className="detail-info">
-                        <div className="detail-label">Şehir</div>
+                        <div className="detail-label">City</div>
                         <div className="detail-value">{selected.cityName}</div>
                       </div>
                     </div>
@@ -563,13 +561,12 @@ export default function Candidates() {
               </div>
               
               <div className="detail-section">
-                <h3>Eğitim Bilgileri</h3>
+                <h3>Education Information</h3>
                 <div className="detail-grid">
                   {selected.university && (
                     <div className="detail-item">
-                      <div className="detail-icon"><i className="fas fa-university"></i></div>
                       <div className="detail-info">
-                        <div className="detail-label">Üniversite</div>
+                        <div className="detail-label">University</div>
                         <div className="detail-value">{selected.university}</div>
                       </div>
                     </div>
@@ -577,9 +574,8 @@ export default function Candidates() {
                   
                   {selected.major && (
                     <div className="detail-item">
-                      <div className="detail-icon"><i className="fas fa-graduation-cap"></i></div>
                       <div className="detail-info">
-                        <div className="detail-label">Bölüm</div>
+                        <div className="detail-label">Major</div>
                         <div className="detail-value">{selected.major}</div>
                       </div>
                     </div>
@@ -587,9 +583,8 @@ export default function Candidates() {
                   
                   {selected.currentYear && (
                     <div className="detail-item">
-                      <div className="detail-icon"><i className="fas fa-user-graduate"></i></div>
                       <div className="detail-info">
-                        <div className="detail-label">Sınıf</div>
+                        <div className="detail-label">Class</div>
                         <div className="detail-value">{selected.currentYear}</div>
                       </div>
                     </div>
@@ -597,7 +592,6 @@ export default function Candidates() {
                   
                   {selected.gpa && (
                     <div className="detail-item">
-                      <div className="detail-icon"><i className="fas fa-chart-line"></i></div>
                       <div className="detail-info">
                         <div className="detail-label">GPA</div>
                         <div className="detail-value">{selected.gpa}</div>
@@ -607,9 +601,8 @@ export default function Candidates() {
                   
                   {selected.expectedGraduateYear && (
                     <div className="detail-item">
-                      <div className="detail-icon"><i className="fas fa-calendar-alt"></i></div>
                       <div className="detail-info">
-                        <div className="detail-label">Mezuniyet Yılı</div>
+                        <div className="detail-label">Graduation Year</div>
                         <div className="detail-value">{selected.expectedGraduateYear}</div>
                       </div>
                     </div>
@@ -618,13 +611,12 @@ export default function Candidates() {
               </div>
               
               <div className="detail-section">
-                <h3>Başvuru Bilgileri</h3>
+                <h3>Application Information</h3>
                 <div className="detail-grid">
                   {selected.jobName && (
                     <div className="detail-item">
-                      <div className="detail-icon"><i className="fas fa-briefcase"></i></div>
                       <div className="detail-info">
-                        <div className="detail-label">Pozisyon</div>
+                        <div className="detail-label">Position Name</div>
                         <div className="detail-value">{selected.jobName}</div>
                       </div>
                     </div>
@@ -638,10 +630,11 @@ export default function Candidates() {
                 className="download-cv-btn"
                 onClick={() => downloadCV(selected)}
               >
-                <i className="fas fa-file-download"></i> CV İndir
+                <i className="fas fa-file-download"></i> Download CV
               </button>
               
-              <div className="status-buttons">
+            {!hideStatusButtons &&(
+                  <div className="status-buttons">
                 <button
                   className="btn approve"
                   onClick={() => {
@@ -654,6 +647,7 @@ export default function Candidates() {
                         );
                         setSelected(null);
                         setShowConfirmModal(false);
+                        setHideStatusButtons(true);
                       } catch (error) {
                         console.error('Status update failed:', error);
                         setShowConfirmModal(false);
@@ -662,29 +656,7 @@ export default function Candidates() {
                     setShowConfirmModal(true);
                   }}
                 >
-                  <i className="fas fa-check"></i> Onayla
-                </button>
-                <button
-                  className="btn pending"
-                  onClick={() => {
-                    setConfirmStatus('pending');
-                    setConfirmAction(() => async () => {
-                      try {
-                        await updateStatus(selected.email, selected.jobName, 'pending');
-                        setCandidates(prev =>
-                          prev.map(c => (c.email === selected.email ? { ...c, status: 'pending' } : c))
-                        );
-                        setSelected(null);
-                        setShowConfirmModal(false);
-                      } catch (error) {
-                        console.error('Status update failed:', error);
-                        setShowConfirmModal(false);
-                      }
-                    });
-                    setShowConfirmModal(true);
-                  }}
-                >
-                  <i className="fas fa-clock"></i> Beklet
+                  <i className="fas fa-check"></i> Approve
                 </button>
                 <button
                   className="btn reject"
@@ -698,6 +670,7 @@ export default function Candidates() {
                         );
                         setSelected(null);
                         setShowConfirmModal(false);
+                        setHideStatusButtons(true);
                       } catch (error) {
                         console.error('Status update failed:', error);
                         setShowConfirmModal(false);
@@ -706,9 +679,9 @@ export default function Candidates() {
                     setShowConfirmModal(true);
                   }}
                 >
-                  <i className="fas fa-times"></i> Reddet
+                  <i className="fas fa-times"></i> Reject
                 </button>
-              </div>
+              </div>)}
             </div>
           </div>
         </div>
@@ -723,24 +696,24 @@ export default function Candidates() {
             className="popup-content confirm-modal"
             onClick={e => e.stopPropagation()}
           >
-            <h3>Onay</h3>
+            <h3>Confirm Action</h3>
             <p>
-              {confirmStatus === 'accept' && "Adayı onayladığınızdan emin misiniz?"}
-              {confirmStatus === 'pending' && "Adayı bekletmek istediğinizden emin misiniz?"}
-              {confirmStatus === 'reject' && "Adayı reddetmek istediğinizden emin misiniz?"}
+              {confirmStatus === 'accept' && "Are you sure you approve the candidate?"}
+              {confirmStatus === 'pending' && "Are you sure you want to put the candidate on hold?"}
+              {confirmStatus === 'reject' && "Are you sure you want to reject this candidate?"}
             </p>
             <div className="confirm-buttons">
               <button
                 className="btn confirm-yes"
                 onClick={confirmAction}
               >
-                Onayla
+                Confirm
               </button>
               <button
                 className="btn confirm-no"
                 onClick={() => setShowConfirmModal(false)}
               >
-                İptal
+                Cancel
               </button>
             </div>
           </div>

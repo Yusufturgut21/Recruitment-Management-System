@@ -47,10 +47,10 @@ function Sidebar({ onFilterApply = () => { } }) {
   // Tek select için yaş ve GPA state'leri
   const yas_araligi = ['22-27', '28-33', '34-39', '40-45', '46-51', '52-57', '58-63'];
   const GpaOptions = [
-    'Between 3.50 and 4.00',
-    'Between 3.00 and 3.50',
-    'Between 2.50 and 3.00',
-    'Between 2.00 and 2.50'
+    '3.50 - 4.00',
+    '3.00 - 3.49',
+    '2.50 - 2.99',
+    '2.00 - 2.49'
   ];
   const [selectedYasAraligi, setSelectedYasAraligi] = useState('');
   const [selectedGpaOption, setSelectedGpaOption] = useState('');
@@ -218,7 +218,7 @@ function Sidebar({ onFilterApply = () => { } }) {
 
       {/* Cinsiyet */}
       <FilterSection
-        title="Sex"
+        title="Gender"
         value={secilenCinsiyet}
         options={Sex}
         onChange={handleSelectChange(setSecilenCinsiyet)}
@@ -277,18 +277,18 @@ function Sidebar({ onFilterApply = () => { } }) {
             onChange={e => {
               const val = e.target.value;
               setSelectedGpaOption(val);
-              if (val === 'Between 3.50 and 4.00') {
+              if (val === '3.50 - 4.00') {
                 setCandidateMinGPA(3.5);
                 setCandidateMaxGPA(4.0);
-              } else if (val === 'Between 3.00 and 3.50') {
+              } else if (val === '3.00 - 3.49') {
                 setCandidateMinGPA(3.0);
-                setCandidateMaxGPA(3.5);
-              } else if (val === 'Between 2.50 and 3.00') {
+                setCandidateMaxGPA(3.49);
+              } else if (val === '2.50 - 2.99') {
                 setCandidateMinGPA(2.5);
-                setCandidateMaxGPA(3.0);
-              } else if (val === 'Between 2.00 and 2.50') {
+                setCandidateMaxGPA(2.99);
+              } else if (val === '2.00 - 2.49') {
                 setCandidateMinGPA(2.0);
-                setCandidateMaxGPA(2.5);
+                setCandidateMaxGPA(2.49);
               } else {
                 setCandidateMinGPA(0.0);
                 setCandidateMaxGPA(4.0);
@@ -319,7 +319,7 @@ function Sidebar({ onFilterApply = () => { } }) {
       <FilterSection
         title="Expected Graduation Year"
         value={secilenMezuniyetYili}
-        options={Array.from({ length: 26 }, (_, i) => (2000 + i).toString())}  // 2000–2025
+        options={Array.from({ length: 30 }, (_, i) => (2000 + i).toString())}  // 2000–2025
         onChange={handleSelectChange(setSecilenMezuniyetYili)}
         onAdd={() => handleAddItem(
           secilenMezuniyetYili,
